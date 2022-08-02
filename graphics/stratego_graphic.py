@@ -4,7 +4,34 @@ from typing import Tuple, Set, List
 from action import Direction
 from degree import Degree
 from game_state import GameState
-from soldier import Soldier
+from soldier import Soldier, Color
+
+RED = '#'
+BLUE = '@'
+
+DEGREE_TO_STR = {
+    Degree.ONE: ' 1',
+    Degree.TWO: ' 2',
+    Degree.THREE: ' 3',
+    Degree.FOUR: ' 4',
+    Degree.FIVE: ' 5',
+    Degree.SIX: ' 6',
+    Degree.SEVEN: ' 7',
+    Degree.EIGHT: ' 8',
+    Degree.NINE: ' 9',
+    Degree.TEN: '10',
+    Degree.FLAG: ' F',
+    Degree.BOMB: ' B',
+    Degree.WATER: '~ ',
+    Degree.EMPTY: '  '
+}
+
+DIRECTION_MAP = {
+    'up': Direction.UP,
+    'down': Direction.DOWN,
+    'right': Direction.RIGHT,
+    'left': Direction.LEFT
+}
 
 
 class StrategoGraphic(object):
@@ -25,8 +52,8 @@ class StrategoGraphic(object):
         return
 
     @abc.abstractmethod
-    def ask_for_initial_position(self, soldiers: List[Soldier], positions: Set[Tuple[int, int]]) \
-            -> Tuple[Soldier, int, int]:
+    def ask_for_initial_position(self, soldiers: List[Soldier], positions: Set[Tuple[int, int]],
+                                 color: Color) -> Tuple[Soldier, int, int]:
         # soldier, x, y
         return
 

@@ -6,6 +6,7 @@ class Color(Enum):
     GRAY = 0
     RED = 1
     BLUE = 2
+    WATER = 3
 
 
 class Soldier(object):

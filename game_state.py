@@ -1,8 +1,24 @@
+from typing import Set
+
 from degree import Degree
 from soldier import Soldier, Color
 from action import Action, Direction
 
 BOARD_SIZE = 10
+DEAD_SOLDIERS = {
+    Degree.BOMB: 0,
+    Degree.ONE: 0,
+    Degree.TWO: 0,
+    Degree.THREE: 0,
+    Degree.FOUR: 0,
+    Degree.FIVE: 0,
+    Degree.SIX: 0,
+    Degree.SEVEN: 0,
+    Degree.EIGHT: 0,
+    Degree.NINE: 0,
+    Degree.TEN: 0,
+    Degree.FLAG: 0
+}
 
 
 class GameState(object):
@@ -12,6 +28,7 @@ class GameState(object):
         self._board = board
         self._score = score
         self._done = done
+        self._dead = {Color.RED: DEAD_SOLDIERS.copy(), Color.BLUE: DEAD_SOLDIERS.copy()}
 
     @property
     def done(self):
@@ -24,6 +41,10 @@ class GameState(object):
     @property
     def board(self):
         return self._board
+
+    @property
+    def dead(self):
+        return self._dead
 
     def get_soldier_at_x_y(self, x, y) -> Soldier:
         if 0 <= x < BOARD_SIZE and 0 <= y < BOARD_SIZE:
@@ -67,7 +88,7 @@ class GameState(object):
             next_is_empty = True
         return True, next_is_empty
 
-    def get_legal_actions(self, agent_color):
+    def get_legal_actions(self, agent_color) -> Set[Action]:
         legal_actions = set()
         for i in range(BOARD_SIZE):
             for j in range(BOARD_SIZE):
@@ -78,6 +99,10 @@ class GameState(object):
         if len(legal_actions) == 0:
             self._done = True
         return legal_actions
+
+    def shot_and_dead(self, soldier):
+        soldier.kill_me()
+        self.dead[soldier.color][soldier.degree] += 1
 
     def apply_action(self, action: Action):
         # we assume that action can only be legal
@@ -104,28 +129,28 @@ class GameState(object):
         elif opponent.degree == Degree.BOMB:
             if action.soldier.degree == Degree.THREE:
                 instead_opponent = action.soldier
-                opponent.kill_me()
+                self.shot_and_dead(opponent)
                 action.soldier.set_position(op_x, op_y)
             else:
-                action.soldier.kill_me()
+                self.shot_and_dead(action.soldier)
         elif opponent.degree == Degree.FLAG:
             instead_opponent = action.soldier
-            opponent.kill_me()
+            self.shot_and_dead(opponent)
             action.soldier.set_position(op_x, op_y)
             self._done = True
         elif opponent.degree == Degree.TEN and action.soldier.degree == Degree.ONE:
             instead_opponent = action.soldier
-            opponent.kill_me()
+            self.shot_and_dead(opponent)
             action.soldier.set_position(op_x, op_y)
         elif opponent.degree > action.soldier.degree:
-            action.soldier.kill_me()
+            self.shot_and_dead(action.soldier)
         elif opponent.degree < action.soldier.degree:
             instead_opponent = action.soldier
-            opponent.kill_me()
+            self.shot_and_dead(opponent)
             action.soldier.set_position(op_x, op_y)
         elif opponent.degree == action.soldier.degree:
             instead_opponent = Soldier(Degree.EMPTY, sol_x, sol_y, Color.GRAY)
-            action.soldier.kill_me()
-            opponent.kill_me()
+            self.shot_and_dead(action.soldier)
+            self.shot_and_dead(opponent)
         self._board[sol_x][sol_y] = instead_me
         self._board[op_x][op_y] = instead_opponent

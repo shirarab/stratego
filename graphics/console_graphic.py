@@ -3,38 +3,11 @@ from typing import Set, Tuple, List
 from action import Direction
 from degree import Degree
 from game_state import GameState
-from graphics.stratego_graphic import StrategoGraphic
+from graphics.stratego_graphic import StrategoGraphic, RED, BLUE, DEGREE_TO_STR, DIRECTION_MAP
 from soldier import Color, Soldier
 
-RED = '#'
-BLUE = '@'
 
-DEGREE_TO_STR = {
-    Degree.ONE: ' 1',
-    Degree.TWO: ' 2',
-    Degree.THREE: ' 3',
-    Degree.FOUR: ' 4',
-    Degree.FIVE: ' 5',
-    Degree.SIX: ' 6',
-    Degree.SEVEN: ' 7',
-    Degree.EIGHT: ' 8',
-    Degree.NINE: ' 9',
-    Degree.TEN: '10',
-    Degree.FLAG: ' F',
-    Degree.BOMB: ' B',
-    Degree.WATER: '~ ',
-    Degree.EMPTY: '  '
-}
-
-DIRECTION_MAP = {
-    'up': Direction.UP,
-    'down': Direction.DOWN,
-    'right': Direction.RIGHT,
-    'left': Direction.LEFT
-}
-
-
-class BasicStrategoGraphic(StrategoGraphic):
+class ConsoleGraphic(StrategoGraphic):
 
     def show_board(self, game_state: GameState):
         if self.num_players_to_show == 0:
@@ -66,8 +39,8 @@ class BasicStrategoGraphic(StrategoGraphic):
     def degree_to_print(self, degree: Degree):
         return DEGREE_TO_STR[degree]
 
-    def ask_for_initial_position(self, soldiers: List[Soldier], positions: Set[Tuple[int, int]]) \
-            -> Tuple[Soldier, int, int]:
+    def ask_for_initial_position(self, soldiers: List[Soldier], positions: Set[Tuple[int, int]],
+                                 color: Color) -> Tuple[Soldier, int, int]:
         # soldier, x, y
         print("Please choose a soldier index and a position from:")
         print("soldiers:", end=' ')
