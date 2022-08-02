@@ -1,7 +1,7 @@
 import abc
 
-from agents.init_agent import InitAgent
-from stratego_graphic import StrategoGraphic
+from agents.init_agents.init_agent import InitAgent
+from graphics.stratego_graphic import StrategoGraphic
 
 
 class Agent(object):

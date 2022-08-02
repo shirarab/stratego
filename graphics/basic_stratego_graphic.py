@@ -3,7 +3,7 @@ from typing import Set, Tuple, List
 from action import Direction
 from degree import Degree
 from game_state import GameState
-from stratego_graphic import StrategoGraphic
+from graphics.stratego_graphic import StrategoGraphic
 from soldier import Color, Soldier
 
 RED = '#'

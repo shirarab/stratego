@@ -2,7 +2,7 @@ import abc
 from typing import Set
 
 from soldier import Soldier
-from stratego_graphic import StrategoGraphic
+from graphics.stratego_graphic import StrategoGraphic
 
 
 class InitAgent(object):

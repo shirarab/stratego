@@ -1,7 +1,7 @@
-from agent import Agent
+from agents.agent import Agent
 from degree import Degree
 from game_state import GameState, BOARD_SIZE
-from stratego_graphic import StrategoGraphic
+from graphics.stratego_graphic import StrategoGraphic
 from soldier import Soldier, Color
 
 NUM_BOMB = 6

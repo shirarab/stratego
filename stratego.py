@@ -1,5 +1,6 @@
 from agents.human_agent import HumanAgent
-from agents.random_agent import RandomAgent, InitRandomAgent
+from agents.init_agents.init_random_agent import InitRandomAgent
+from agents.random_agent import RandomAgent
 from game import StrategoGame
 from graphics.basic_stratego_graphic import BasicStrategoGraphic
 from soldier import Color
