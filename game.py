@@ -77,4 +77,5 @@ class StrategoGame(object):
             blue_action = self._blue_agent.get_action(self._state)
             self._state.apply_action(blue_action)
             self._graphic.show_board(self._state)
+        self._graphic.game_over(self._state.winner, self._state.score)
         return self._state.score

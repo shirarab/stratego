@@ -26,7 +26,7 @@ class ConsoleGraphic(StrategoGraphic):
                     square_to_print += RED + degree + ' |'
                 elif soldier.color == Color.BLUE:
                     square_to_print += BLUE
-                    if self.num_players_to_show == 2:
+                    if self.num_players_to_show == 2 or soldier.show_me:
                         square_to_print += degree + ' |'
                     else:
                         square_to_print += '  ' + ' |'
@@ -45,11 +45,11 @@ class ConsoleGraphic(StrategoGraphic):
         print("Please choose a soldier index and a position from:")
         print("soldiers:", end=' ')
         for i, s in enumerate(soldiers):
-            end = '\n' if (i+1) % 10 == 0 else ', '
+            end = '\n' if (i + 1) % 10 == 0 else ', '
             print(f"{i}:{DEGREE_TO_STR[s.degree]}", end=end)
         print("positions:", end=' ')
         for i, p in enumerate(positions):
-            end = '\n' if (i+1) % 10 == 0 else ', '
+            end = '\n' if (i + 1) % 10 == 0 else ', '
             print(p, end=end)
         print()
         s_ind, x, y = input("index x y: ").split()
@@ -60,3 +60,6 @@ class ConsoleGraphic(StrategoGraphic):
         # x, y, direction, num_steps
         x, y, direction, num_steps = input("x y direction num_steps: ").split()
         return int(x), int(y), DIRECTION_MAP[direction.lower()], int(num_steps)
+
+    def game_over(self, color: Color, score: int = 0):
+        print(f"GAME OVER winner is {color.name} with score {score}")

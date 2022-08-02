@@ -61,3 +61,7 @@ class StrategoGraphic(object):
     def ask_for_action(self, game_state: GameState) -> Tuple[int, int, Direction, int]:
         # x, y, direction, num_steps
         return
+
+    @abc.abstractmethod
+    def game_over(self, color: Color, score: int = 0):
+        return

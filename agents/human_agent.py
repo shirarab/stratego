@@ -15,8 +15,9 @@ class HumanAgent(Agent):
 
     def get_action(self, game_state: GameState) -> Action:
         legal_actions = game_state.get_legal_actions(self.color)
-        for a in legal_actions:
-            print(a.soldier.degree,"x:", a.soldier.x, "y:", a.soldier.y, "dir:", a.direction, "steps:", a.num_steps)
+        # do not delete
+        # for a in legal_actions:
+        #     print(a.soldier.degree,"x:", a.soldier.x, "y:", a.soldier.y, "dir:", a.direction, "steps:", a.num_steps)
         if legal_actions == set():
             return None
         action = None

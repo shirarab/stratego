@@ -16,11 +16,7 @@ class Soldier(object):
         self._position_y = position_y
         self._color = color
         self._is_alive = True
-        # self._num_steps = 1
-        # if degree == degree.BOMB or degree == degree.FLAG:
-        #     self._num_steps = 0
-        # elif degree == degree.TWO:
-        #     self._num_steps
+        self._show_me = False
 
     @property
     def degree(self):
@@ -46,6 +42,10 @@ class Soldier(object):
     def is_alive(self):
         return self._is_alive
 
+    @property
+    def show_me(self):
+        return self._show_me
+
     def set_position(self, position_x, position_y):
         self._position_x = position_x
         self._position_y = position_y
@@ -58,3 +58,6 @@ class Soldier(object):
 
     def kill_me(self):
         self._is_alive = False
+
+    def set_show_me(self):
+        self._show_me = True

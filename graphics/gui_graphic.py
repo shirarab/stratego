@@ -175,9 +175,11 @@ class GuiGraphic(StrategoGraphic):
     def _get_soldier_btn_style_and_text(self, soldier: Soldier):
         text = DEGREE_TO_STR[soldier.degree]
         btn_style = SOLDIER_COLOR_TO_STYLE[soldier.color]
-        if soldier.color in {Color.WATER, Color.GRAY} \
-                or (soldier.color == Color.BLUE and self.num_players_to_show == 1):
+        if soldier.color in {Color.WATER, Color.GRAY}:
             text = ""
+        if soldier.color == Color.BLUE and self.num_players_to_show == 1 and not soldier.show_me:
+            text = ""
+
         return btn_style, text
 
     def _click_btn_soldier_selected_pos(self, row, col):
@@ -198,10 +200,11 @@ class GuiGraphic(StrategoGraphic):
     def _update_side_board(self, color: Color, dead=DEAD_SOLDIERS):
         board = self._board_red if color == Color.RED else self._board_blue
         btn_board = self._board_buttons_red if color == Color.RED else self._board_buttons_blue
-        print()
-        print("dead:", dead)
+        # do not delete
+        # print()
+        # print("dead:", dead)
+        # print()
         cpy_dead = dead.copy()
-        print()
         for i in range(SOLDIERS_ROWS):
             for j in range(self.board_size):
                 degree = SIDE_SOLDIERS_DEGREES[i][j]
@@ -282,10 +285,24 @@ class GuiGraphic(StrategoGraphic):
             x, y = self._first_soldier.x, self._first_soldier.y
             x_sec, y_sec = self._second_soldier.x, self._second_soldier.y
         direction, num_steps = self._get_click_direction(x, y, x_sec, y_sec)
-        print("x_sec", x_sec, "y_sec", y_sec)
-        print("chosen: x", x, "y", y, "dir", direction, "num steps", num_steps)
+        # do not delete
+        # print("x_sec", x_sec, "y_sec", y_sec)
+        # print("chosen: x", x, "y", y, "dir", direction, "num steps", num_steps)
         self._first_soldier = None
         self._second_soldier = None
         self._first_clicked.set(False)
         self._second_clicked.set(False)
         return x, y, direction, num_steps
+
+    def game_over(self, color: Color, score: int = 0):
+        """ Ends the game """
+        # self._model.stop_game()
+        # message = self._create_end_message()
+        message = f"GAME OVER winner is {color.name} with score {score}"
+        messagebox.showinfo(GAME_OVER_TITLE, message)
+        # play_again = messagebox.askyesno(TIME_UP, message)
+        # if play_again:
+        #     if self._start_btn_command:
+        #         self._start_btn_command()
+        # else:
+        self._root.destroy()

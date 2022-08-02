@@ -7,10 +7,9 @@ from graphics.gui_graphic import GuiGraphic
 from soldier import Color
 
 if __name__ == '__main__':
-    # graphic = ConsoleGraphic(10, 2)
-    graphic = GuiGraphic(10, 2)
-    red_agent = HumanAgent(Color.RED, graphic, InitRandomAgent())
+    # graphic = ConsoleGraphic(10, 0)
+    graphic = GuiGraphic(10, 1)
+    red_agent = RandomAgent(Color.RED, graphic, InitRandomAgent())
     blue_agent = RandomAgent(Color.BLUE, graphic)
     game = StrategoGame(red_agent, blue_agent, graphic, True)
     score = game.run()
-    print(score)
