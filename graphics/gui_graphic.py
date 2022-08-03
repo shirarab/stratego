@@ -56,7 +56,8 @@ class GuiGraphic(StrategoGraphic):
         self._first_clicked = tk.BooleanVar()
         self._second_clicked = tk.BooleanVar()
         self._side_clicked = tk.BooleanVar()
-        self._flag_is_first_time = True
+        self._red_flag_is_first_time = True
+        self._blue_flag_is_first_time = True
 
     @property
     def board(self):
@@ -230,25 +231,34 @@ class GuiGraphic(StrategoGraphic):
                                  color: Color) -> Tuple[Soldier, int, int]:
         # soldier, x, y
         board = self._board_red if color == Color.RED else self._board_blue
-        if self._flag_is_first_time:
-            self._flag_is_first_time = False
+        flag = self._red_flag_is_first_time if color == Color.RED else self._blue_flag_is_first_time
+        if flag:
+            if color == Color.RED:
+                self._red_flag_is_first_time = False
+            else:
+                self._blue_flag_is_first_time = False
             for i in range(SOLDIERS_ROWS):
                 for j in range(self.board_size):
                     board[i][j] = True
 
         self._update_side_board(color)
-
-        degree, i, j, x, y = None, -1, -1, 0, 0
+        degree, i, j, x, y = None, -1, -1, -1, -1
+        self._first_soldier = None
+        self._second_soldier = None
         self._root.waitvar(self._side_clicked)
+        self._first_soldier = None
+        self._second_soldier = None
         self._root.waitvar(self._first_clicked)
         if self._first_soldier is not None and self._side_soldier is not None:
             x, y = self._first_soldier.x, self._first_soldier.y
             degree, i, j = self._side_soldier
-        if i >= 0 and j >= 0:
-            board[i][j] = False
+        # if i >= 0 and j >= 0:
+        #     board[i][j] = False
         self._first_soldier = None
         self._second_soldier = None
         self._side_soldier = None
+        # do not delete
+        print("side:", x, y)
         self._first_clicked.set(False)
         self._second_clicked.set(False)
         self._side_clicked.set(False)
@@ -258,11 +268,15 @@ class GuiGraphic(StrategoGraphic):
             if s.degree == degree:
                 soldier = s
                 break
-
-        if (x, y) in positions:
+        m = x
+        if soldier.color == Color.BLUE:
+            m = self.board_size - 1 - x
+        if (m, y) in positions and board[i][j]:
+            board[i][j] = False
             self.board[x][y] = soldier
             self._update_board()
-        return soldier, x, y
+            return soldier, m, y
+        return None, -1, -1
 
     def _get_click_direction(self, x, y, x_sec, y_sec):
         if x == x_sec and y < y_sec:

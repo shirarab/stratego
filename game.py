@@ -38,6 +38,7 @@ class StrategoGame(object):
         for i in range(len(red_board)):
             for j in range(len(red_board[0])):
                 board[i][j] = red_board[i][j]
+                red_board[i][j].set_position(i, j)
         for i in range(2):
             for j in range(BOARD_SIZE):
                 if j in {2, 3, 6, 7}:
@@ -46,6 +47,7 @@ class StrategoGame(object):
             for j in range(len(blue_board[0])):
                 board[BOARD_SIZE - 1 - i][j] = blue_board[i][j]
                 board[BOARD_SIZE - 1 - i][j].set_x(BOARD_SIZE - 1 - i)
+                blue_board[i][j].set_position(BOARD_SIZE - 1 - i, j)
         return board
 
     def start_soldiers(self, color: Color):

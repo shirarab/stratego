@@ -8,8 +8,9 @@ from agents.heuristics import null_heuristic
 
 class Agent(object):
     def __init__(self, color, graphic: StrategoGraphic, init_agent: InitAgent,
-                 heuristic=null_heuristic, depth: int = 0):
+                 heuristic=null_heuristic, opponent_heuristic=null_heuristic, depth: int = 1):
         self._heuristic = heuristic
+        self._opponent_heuristic = opponent_heuristic
         self._color = color
         self._my_soldiers = set()  # 40 soldiers
         self._init_agent = init_agent
@@ -41,6 +42,10 @@ class Agent(object):
     @property
     def heuristic(self):
         return self._heuristic
+
+    @property
+    def opponent_heuristic(self):
+        return self._opponent_heuristic
 
     @abc.abstractmethod
     def get_action(self, game_state):

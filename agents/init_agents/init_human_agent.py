@@ -16,6 +16,9 @@ class InitHumanAgent(InitAgent):
                 optional_positions.add((i, j))
         while len(optional_positions) > 0:
             soldier, x, y = graphic.ask_for_initial_position(list(cp_soldiers), optional_positions, color)
+            while (soldier not in cp_soldiers) or ((x, y) not in optional_positions):
+                soldier, x, y = \
+                    graphic.ask_for_initial_position(list(cp_soldiers), optional_positions, color)
             board[x][y] = soldier
             cp_soldiers.remove(soldier)
             optional_positions.remove((x, y))

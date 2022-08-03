@@ -2,7 +2,7 @@ import abc
 import random
 from typing import Set
 
-from agents.init_agents.init_heuristics import null_heuristic
+from agents.init_agents.init_heuristics import init_null_heuristic
 from soldier import Soldier, Color
 from graphics.stratego_graphic import StrategoGraphic
 
@@ -11,7 +11,7 @@ from graphics.stratego_graphic import StrategoGraphic
 
 
 class InitAgent(object):
-    def __init__(self, heuristic = null_heuristic):
+    def __init__(self, heuristic = init_null_heuristic):
         self._heuristic = heuristic
 
     @property

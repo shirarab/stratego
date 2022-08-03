@@ -21,4 +21,4 @@ class RandomAgent(Agent):
         return random.sample(legal_actions, 1)[0]
 
     def get_initial_positions(self):
-        return self.init_agent.get_initial_positions(self.soldiers, self.graphic)
+        return self.init_agent.get_initial_positions(self.soldiers, self.graphic, self.color)

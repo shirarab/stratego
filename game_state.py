@@ -1,4 +1,6 @@
 from typing import Set
+from copy import deepcopy
+import ctypes
 
 from degree import Degree
 from soldier import Soldier, Color
@@ -111,7 +113,9 @@ class GameState(object):
         self.dead[killed.color][killed.degree] += 1
         winner.set_show_me()
 
-
+    def get_successor(self, action: Action):
+        self.apply_action(action)
+        return self
 
     def apply_action(self, action: Action):
         # we assume that action can only be legal
@@ -164,3 +168,23 @@ class GameState(object):
             self.shot_and_dead(opponent, action.soldier)
         self._board[sol_x][sol_y] = instead_me
         self._board[op_x][op_y] = instead_opponent
+
+    def store(self):
+        stored_info_me = {"score": self._score, "done": self._done, "winner": self._winner,
+                          "dead": deepcopy(self._dead), "board": {}}
+        for i in range(BOARD_SIZE):
+            for j in range(BOARD_SIZE):
+                soldier_info = self._board[i][j].store()
+                stored_info_me["board"][(i, j)] = self._board[i][j], soldier_info
+        return stored_info_me
+
+    def restore(self, stored_info_me):
+        self._score = stored_info_me["score"]
+        self._done = stored_info_me["done"]
+        self._winner = stored_info_me["winner"]
+        self._dead = stored_info_me["dead"]
+        for i in range(BOARD_SIZE):
+            for j in range(BOARD_SIZE):
+                soldier, soldier_info = stored_info_me["board"][(i, j)]
+                soldier.restore(soldier_info)
+                self._board[i][j] = soldier

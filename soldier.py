@@ -1,6 +1,8 @@
 # import degree
 from enum import Enum
 
+from degree import Degree
+
 
 class Color(Enum):
     GRAY = 0
@@ -61,3 +63,13 @@ class Soldier(object):
 
     def set_show_me(self):
         self._show_me = True
+
+    def store(self):
+        return self._position_x, self._position_y, self._is_alive, self._show_me
+
+    def restore(self, stored_info):
+        self._position_x = stored_info[0]
+        self._position_y = stored_info[1]
+        self._is_alive = stored_info[2]
+        self._show_me = stored_info[3]
+
