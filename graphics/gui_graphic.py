@@ -257,8 +257,8 @@ class GuiGraphic(StrategoGraphic):
         self._first_soldier = None
         self._second_soldier = None
         self._side_soldier = None
-        # do not delete
-        print("side:", x, y)
+        # # do not delete
+        # print("side:", x, y)
         self._first_clicked.set(False)
         self._second_clicked.set(False)
         self._side_clicked.set(False)
