@@ -3,7 +3,8 @@ from typing import Set
 
 from agents.init_agents.init_agent import InitAgent
 from graphics.stratego_graphic import StrategoGraphic
-from soldier import Soldier, Color
+from constants import Color
+from soldier import Soldier#, Color
 
 
 class InitRandomAgent(InitAgent):

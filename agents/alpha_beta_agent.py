@@ -6,9 +6,10 @@ import random
 
 from agents.init_agents.init_agent import InitAgent
 from agents.init_agents.init_random_agent import InitRandomAgent
-from game_state import GameState, BOARD_SIZE
+from game_state import GameState
 from graphics.stratego_graphic import StrategoGraphic
-from soldier import Color
+from constants import Color
+# from soldier import Color
 from agents.heuristics import null_heuristic
 from agents.opponent_actions import null_get_legal_actions_opponent, null_get_successor_opponent
 
@@ -24,9 +25,9 @@ class AlphaBetaAgent(Agent):
         self._stored_by_depth = {}
 
     def get_action(self, game_state: GameState) -> Action:
-        self.store_alpha_beta(game_state, self.depth+1, self.color)
+        self.store_alpha_beta(game_state, self.depth + 1, self.color)
         val, action = self.alpha_beta(-float("inf"), float("inf"), game_state, self.depth, True)
-        self.restore_alpha_beta(game_state, self.depth+1, self.color)
+        self.restore_alpha_beta(game_state, self.depth + 1, self.color)
         return action
 
     def get_initial_positions(self):

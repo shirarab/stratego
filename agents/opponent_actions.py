@@ -2,7 +2,8 @@ from typing import Set
 
 from action import Action
 from game_state import GameState
-from soldier import Color
+from constants import Color
+# from soldier import Color
 
 
 def null_get_legal_actions_opponent(game_state: GameState, color: Color) -> Set[Action]:

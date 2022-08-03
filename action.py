@@ -1,13 +1,5 @@
-from enum import Enum
-
+from constants import Direction
 from soldier import Soldier
-
-
-class Direction(Enum):
-    UP = 1
-    DOWN = 2
-    LEFT = 3
-    RIGHT = 4
 
 
 class Action(object):

@@ -1,10 +1,12 @@
 import abc
 from typing import Tuple, Set, List
 
-from action import Direction
-from degree import Degree
+# from action import Direction
+from constants import Degree, Direction
+# from degree import Degree
 from game_state import GameState
-from soldier import Soldier, Color
+from constants import Color
+from soldier import Soldier#, Color
 
 RED = '#'
 BLUE = '@'

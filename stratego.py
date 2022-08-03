@@ -7,7 +7,8 @@ from agents.random_agent import RandomAgent
 from game import StrategoGame
 from graphics.console_graphic import ConsoleGraphic
 from graphics.gui_graphic import GuiGraphic
-from soldier import Color
+from constants import Color
+# from soldier import Color
 from agents.init_agents.init_heuristics import *
 from agents.opponent_actions import *
 from agents.heuristics import *

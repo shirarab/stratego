@@ -1,23 +1,9 @@
 from agents.agent import Agent
-from degree import Degree
-from game_state import GameState, BOARD_SIZE
+from constants import Degree, BOARD_SIZE, NUM_OF_PLAYER_DEGREE_SOLDIERS
+from game_state import GameState
 from graphics.stratego_graphic import StrategoGraphic
-from soldier import Soldier, Color
-
-NUM_OF_PLAYER_DEGREE_SOLDIERS = {
-    Degree.BOMB: 6,
-    Degree.ONE: 1,
-    Degree.TWO: 8,
-    Degree.THREE: 5,
-    Degree.FOUR: 4,
-    Degree.FIVE: 4,
-    Degree.SIX: 4,
-    Degree.SEVEN: 3,
-    Degree.EIGHT: 2,
-    Degree.NINE: 1,
-    Degree.TEN: 1,
-    Degree.FLAG: 1
-}
+from constants import Color
+from soldier import Soldier
 
 
 class StrategoGame(object):

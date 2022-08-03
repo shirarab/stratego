@@ -1,6 +1,7 @@
 from typing import List
 
-from degree import Degree
+from constants import Degree
+# from degree import Degree
 from soldier import Soldier
 
 

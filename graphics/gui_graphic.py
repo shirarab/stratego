@@ -1,10 +1,11 @@
 import time
 from typing import List, Set, Tuple
-from action import Direction
-from degree import Degree
-from game_state import GameState, DEAD_SOLDIERS
+# from action import Direction
+from constants import Degree, Color, DEAD_SOLDIERS, Direction
+# from degree import Degree
+from game_state import GameState#, DEAD_SOLDIERS
 from graphics.stratego_graphic import StrategoGraphic, DEGREE_TO_STR
-from soldier import Soldier, Color
+from soldier import Soldier#, Color
 
 import tkinter as tk
 from graphics.gui_graphics.texts import *

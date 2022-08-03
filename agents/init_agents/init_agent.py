@@ -3,7 +3,8 @@ import random
 from typing import Set
 
 from agents.init_agents.init_heuristics import init_null_heuristic
-from soldier import Soldier, Color
+from constants import Color
+from soldier import Soldier#, Color
 from graphics.stratego_graphic import StrategoGraphic
 
 

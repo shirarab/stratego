@@ -1,10 +1,11 @@
 from typing import Set, Tuple, List
 
-from action import Direction
-from degree import Degree
+# from action import Direction
+from constants import Degree, Color, Direction
+# from degree import Degree
 from game_state import GameState
 from graphics.stratego_graphic import StrategoGraphic, RED, BLUE, DEGREE_TO_STR, DIRECTION_MAP
-from soldier import Color, Soldier
+from soldier import Soldier
 
 
 class ConsoleGraphic(StrategoGraphic):

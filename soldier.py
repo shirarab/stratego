@@ -1,16 +1,3 @@
-# import degree
-from enum import Enum
-
-from degree import Degree
-
-
-class Color(Enum):
-    GRAY = 0
-    RED = 1
-    BLUE = 2
-    WATER = 3
-
-
 class Soldier(object):
     def __init__(self, degree, position_x, position_y, color):
         self._degree = degree
@@ -72,4 +59,3 @@ class Soldier(object):
         self._position_y = stored_info[1]
         self._is_alive = stored_info[2]
         self._show_me = stored_info[3]
-

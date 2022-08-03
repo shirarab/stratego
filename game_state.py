@@ -1,32 +1,13 @@
 from typing import Set
 from copy import deepcopy
-import ctypes
-
-from degree import Degree
-from soldier import Soldier, Color
-from action import Action, Direction
-
-BOARD_SIZE = 10
-DEAD_SOLDIERS = {
-    Degree.BOMB: 0,
-    Degree.ONE: 0,
-    Degree.TWO: 0,
-    Degree.THREE: 0,
-    Degree.FOUR: 0,
-    Degree.FIVE: 0,
-    Degree.SIX: 0,
-    Degree.SEVEN: 0,
-    Degree.EIGHT: 0,
-    Degree.NINE: 0,
-    Degree.TEN: 0,
-    Degree.FLAG: 0
-}
+from constants import Degree, DEAD_SOLDIERS, BOARD_SIZE
+from constants import Color, Direction
+from soldier import Soldier
+from action import Action
 
 
 class GameState(object):
     def __init__(self, board, score=0, done=False):
-        # if board is None:
-        #     board = [['-' for i in range(BOARD_SIZE)] for j in range(BOARD_SIZE)]
         self._board = board
         self._score = score
         self._done = done

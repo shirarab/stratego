@@ -1,5 +1,6 @@
 from game_state import GameState
-from soldier import Color
+from constants import Color
+# from soldier import Color
 
 
 def null_heuristic(game_state: GameState, color: Color):
