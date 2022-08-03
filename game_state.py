@@ -111,6 +111,8 @@ class GameState(object):
         self.dead[killed.color][killed.degree] += 1
         winner.set_show_me()
 
+
+
     def apply_action(self, action: Action):
         # we assume that action can only be legal
         if self._done or action is None:
