@@ -64,3 +64,6 @@ class Direction(Enum):
     DOWN = 2
     LEFT = 3
     RIGHT = 4
+
+
+DEGREE_OPTIONS_LIST = [j.value for j in Degree]

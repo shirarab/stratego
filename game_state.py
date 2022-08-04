@@ -1,6 +1,6 @@
 from typing import Set
 from copy import deepcopy
-from constants import Degree, DEAD_SOLDIERS, BOARD_SIZE
+from constants import Degree, DEAD_SOLDIERS, BOARD_SIZE, DEGREE_OPTIONS_LIST
 from constants import Color, Direction
 from soldier import Soldier
 from action import Action
@@ -16,6 +16,11 @@ class GameState(object):
         else:
             self._dead = dead
         self._winner = Color.GRAY
+        self.knowledge_base = {Color.RED: {}, Color.BLUE: {}}
+        for i in range(BOARD_SIZE):
+            for j in range(BOARD_SIZE):
+                if board[i][j].color == Color.RED or board[i][j].color == Color.BLUE:
+                    self.knowledge_base[board[i][j].color][board[i][j]] = DEGREE_OPTIONS_LIST.copy()
 
     @property
     def done(self):
