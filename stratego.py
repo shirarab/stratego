@@ -1,4 +1,5 @@
 from agents.alpha_beta_agent import AlphaBetaAgent
+from agents.new_alpha_beta_agent import NewAlphaBetaAgent
 from agents.human_agent import HumanAgent
 from agents.init_agents.init_hill_climbing_agent import InitHillClimbingAgent
 from agents.init_agents.init_human_agent import InitHumanAgent
@@ -16,11 +17,10 @@ from agents.heuristics import *
 if __name__ == '__main__':
     # graphic = ConsoleGraphic(10, 2)
     graphic = GuiGraphic(10, 2)
-    # red_agent = AlphaBetaAgent(Color.RED, graphic, InitRandomAgent(), depth=2,
-    #                            heuristic=try_heuristic, opponent_heuristic=try_heuristic,
-    #                            get_legal_actions_opponent=do_not_use_me_ever)
-    red_agent = RandomAgent(Color.RED, graphic)
-    blue_agent = RandomAgent(Color.BLUE, graphic, InitHumanAgent())
+    red_agent = NewAlphaBetaAgent(Color.RED, graphic, InitRandomAgent(), depth=2,
+                                  heuristic=min_soldiers_opp_heuristic, opponent_heuristic=min_soldiers_opp_heuristic,
+                                  get_legal_actions_opponent=do_not_use_me_ever)
+    # red_agent = RandomAgent(Color.RED, graphic)
+    blue_agent = RandomAgent(Color.BLUE, graphic)
     game = StrategoGame(red_agent, blue_agent, graphic, True)
     score = game.run()
-

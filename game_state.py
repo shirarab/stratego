@@ -7,11 +7,14 @@ from action import Action
 
 
 class GameState(object):
-    def __init__(self, board, score=0, done=False):
+    def __init__(self, board, score=0, done=False, dead=None):
         self._board = board
         self._score = score
         self._done = done
-        self._dead = {Color.RED: DEAD_SOLDIERS.copy(), Color.BLUE: DEAD_SOLDIERS.copy()}
+        if dead is None:
+            self._dead = {Color.RED: DEAD_SOLDIERS.copy(), Color.BLUE: DEAD_SOLDIERS.copy()}
+        else:
+            self._dead = dead
         self._winner = Color.GRAY
 
     @property

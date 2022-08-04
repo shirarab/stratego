@@ -14,3 +14,12 @@ def try_heuristic(game_state: GameState, color: Color):
             if game_state.get_soldier_at_x_y(i, j).color == color:
                 val += 1
     return val
+
+
+def min_soldiers_opp_heuristic(game_state: GameState, color: Color):
+    op_color = Color.RED if color == Color.BLUE else Color.BLUE
+    val = 0
+    dead_opp = game_state.dead[op_color]
+    for i in dead_opp:
+        val += dead_opp[i]
+    return val
