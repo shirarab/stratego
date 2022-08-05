@@ -8,6 +8,19 @@ from action import Action
 
 class GameState(object):
     def __init__(self, board, score=0, done=False, dead=None):
+        """
+        Create a new instance of game state
+        
+        Attributes:
+            self._board : Two-dimensional array of Soldier objects
+            self._score :
+            self._done : Is the game over (flag revealed)
+            self._dead : Dead soldiers for each color
+            self._winner : winning color
+            self.knowledge_base : for each color, keep a dictionary with soldier objects as keys and optional degrees
+                                    as values
+            
+        """
         self._board = board
         self._score = score
         self._done = done
@@ -17,6 +30,7 @@ class GameState(object):
             self._dead = dead
         self._winner = Color.GRAY
         self.knowledge_base = {Color.RED: {}, Color.BLUE: {}}
+        # init the knowledge base with full options for each opponent soldier:
         for i in range(BOARD_SIZE):
             for j in range(BOARD_SIZE):
                 if board[i][j].color == Color.RED or board[i][j].color == Color.BLUE:
