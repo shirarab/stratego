@@ -43,6 +43,12 @@ class Color(Enum):
     WATER = 3
 
 
+OP_COLOR = {
+    Color.BLUE: Color.RED,
+    Color.RED: Color.BLUE
+}
+
+
 NUM_OF_PLAYER_DEGREE_SOLDIERS = {
     Degree.BOMB: 6,
     Degree.ONE: 1,

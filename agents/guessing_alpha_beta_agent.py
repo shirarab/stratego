@@ -1,6 +1,6 @@
 import itertools
 from copy import deepcopy
-from constants import NUM_OF_PLAYER_DEGREE_SOLDIERS, Degree, BOARD_SIZE
+from constants import NUM_OF_PLAYER_DEGREE_SOLDIERS, Degree, BOARD_SIZE, OP_COLOR
 from soldier import Soldier
 from agents.agent import Agent
 from action import Action
@@ -18,7 +18,7 @@ from agents.heuristics import null_heuristic
 from agents.opponent_actions import null_get_legal_actions_opponent, null_get_successor_opponent
 
 
-class NewAlphaBetaAgent(Agent):
+class GuessingAlphaBetaAgent(Agent):
     def __init__(self, color, graphic: StrategoGraphic, init_agent: InitAgent,
                  heuristic=null_heuristic, opponent_heuristic=null_heuristic, depth: int = 1,
                  get_legal_actions_opponent=null_get_legal_actions_opponent,
@@ -45,7 +45,8 @@ class NewAlphaBetaAgent(Agent):
         game_state.restore(self._stored_by_depth[(depth, color)])
 
     def guessing_opponent_soldiers(self, game_state: GameState):
-        op_color = Color.RED if self.color == Color.BLUE else Color.BLUE
+        op_color = OP_COLOR[self.color]
+        game_state.update_knowledge_base(op_color)
         num_soldiers_opponent = Counter(NUM_OF_PLAYER_DEGREE_SOLDIERS.copy())
         num_dead_soldiers_opponent = Counter(game_state.dead[op_color].copy())
         num_soldiers_opponent_on_board = num_soldiers_opponent - num_dead_soldiers_opponent
@@ -79,7 +80,7 @@ class NewAlphaBetaAgent(Agent):
                                      op_color):
         if index == len(opp_soldiers):
             return degree
-        options = game_state.knowledge_base[op_color][opp_soldiers[index]].copy()
+        options = game_state.soldier_knowledge_base[op_color][opp_soldiers[index]].copy()
         random.shuffle(options)
         for i in options:
             if num_soldiers_opponent_on_board[i] > 0:

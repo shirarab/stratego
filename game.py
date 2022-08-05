@@ -14,6 +14,7 @@ class StrategoGame(object):
         self._graphic = graphic
         self._state: GameState = None
         self._game_ended = False
+        self._turn_count = 0
         self._sleep_between_actions = sleep_between_actions
 
     def get_initial_board(self):
@@ -55,6 +56,7 @@ class StrategoGame(object):
         while not self._state.done:
             # if self._sleep_between_actions:
             #     time.sleep(10)
+            self._turn_count += 1
             red_action = self._red_agent.get_action(self._state)
             self._state.apply_action(red_action)
             self._graphic.show_board(self._state)
@@ -62,6 +64,7 @@ class StrategoGame(object):
                 break
             # if self._sleep_between_actions:
             #     time.sleep(10)
+            self._turn_count += 1
             blue_action = self._blue_agent.get_action(self._state)
             self._state.apply_action(blue_action)
             self._graphic.show_board(self._state)
