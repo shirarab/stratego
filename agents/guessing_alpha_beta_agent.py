@@ -32,6 +32,8 @@ class GuessingAlphaBetaAgent(Agent):
         self.store_alpha_beta(game_state, self.depth + 1, self.color)
         guessed_game_state = self.guessing_opponent_soldiers(game_state)
         val, action = self.alpha_beta(-float("inf"), float("inf"), guessed_game_state, self.depth, True)
+        action = Action(game_state.get_soldier_at_x_y(action.soldier.x, action.soldier.y), action.direction,
+                        action.num_steps)
         self.restore_alpha_beta(game_state, self.depth + 1, self.color)
         return action
 
