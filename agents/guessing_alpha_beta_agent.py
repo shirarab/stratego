@@ -1,16 +1,15 @@
-import copy
-import itertools
-from copy import deepcopy
+# import itertools
+# from copy import deepcopy
 from constants import NUM_OF_PLAYER_DEGREE_SOLDIERS, Degree, BOARD_SIZE, OP_COLOR
 from soldier import Soldier
 from agents.agent import Agent
 from action import Action
 from collections import Counter
-import numpy as np
+# import numpy as np
 import random
 
 from agents.init_agents.init_agent import InitAgent
-from agents.init_agents.init_random_agent import InitRandomAgent
+# from agents.init_agents.init_random_agent import InitRandomAgent
 from game_state import GameState
 from graphics.stratego_graphic import StrategoGraphic
 from constants import Color
@@ -33,8 +32,6 @@ class GuessingAlphaBetaAgent(Agent):
         self.store_alpha_beta(game_state, self.depth + 1, self.color)
         guessed_game_state = self.guessing_opponent_soldiers(game_state)
         val, action = self.alpha_beta(-float("inf"), float("inf"), guessed_game_state, self.depth, True)
-        action = Action(game_state.get_soldier_at_x_y(action.soldier.x, action.soldier.y), action.direction,
-                        action.num_steps)
         self.restore_alpha_beta(game_state, self.depth + 1, self.color)
         return action
 
@@ -49,7 +46,7 @@ class GuessingAlphaBetaAgent(Agent):
 
     def guessing_opponent_soldiers(self, game_state: GameState):
         op_color = OP_COLOR[self.color]
-        game_state.update_knowledge_base(op_color)
+        game_state.get_knowledge_base(op_color).update(game_state)
         num_soldiers_opponent = Counter(NUM_OF_PLAYER_DEGREE_SOLDIERS.copy())
         num_dead_soldiers_opponent = Counter(game_state.dead[op_color].copy())
         num_soldiers_opponent_on_board = num_soldiers_opponent - num_dead_soldiers_opponent
@@ -66,7 +63,8 @@ class GuessingAlphaBetaAgent(Agent):
             for j in range(BOARD_SIZE):
                 soldier_info = game_state.board[i][j]
                 if soldier_info.color == op_color:
-                    opp_soldiers.append([soldier_info, len(game_state.soldier_knowledge_base[op_color][soldier_info])])
+                    opp_soldiers.append([soldier_info,
+                                    game_state.get_knowledge_base(op_color).option_count_for_soldier(soldier_info)])
                 if soldier_info.color == self.color:
                     board[i][j] = Soldier(soldier_info.degree, i, j, self.color)
         opp_soldiers.sort(key=lambda x: x[1])
@@ -77,29 +75,15 @@ class GuessingAlphaBetaAgent(Agent):
             board[soldier.x][soldier.y] = Soldier(degree_opp[i], soldier.x, soldier.y, op_color)
 
         dead = {Color.RED: game_state.dead[Color.RED].copy(), Color.BLUE: game_state.dead[Color.BLUE].copy()}
-        KB_S = None
-        KB_D = None
-        # the alpha beta doesn't use the KB
-        # KB_S = {Color.RED: copy.deepcopy(game_state.soldier_knowledge_base[Color.RED]),
-        #         Color.BLUE: copy.deepcopy(game_state.soldier_knowledge_base[Color.BLUE])}
-        # KB_D = {Color.RED: copy.deepcopy(game_state.degree_knowledge_base[Color.RED]),
-        #         Color.BLUE: copy.deepcopy(game_state.degree_knowledge_base[Color.BLUE])}
-        # for color in [Color.RED, Color.BLUE]:
-        #     for s in KB_S[color]:
-        #         KB_S[board[s.x][s.y]] = KB_S[color][s]
-        #         KB_S[color].remove(s)
-        #     for deg in KB_D[color]:
-        #         for s in KB_D[color][deg].copy():
-        #             KB_D[color][deg].append(board[s.x][s.y])
-        #             KB_D[color][deg].remove(s)
-
-        return GameState(board, game_state.score, game_state.done, dead, KB_S, KB_D)
+        return GameState(board, game_state.score, game_state.done, dead)
 
     def find_degree_for_opp_soldiers(self, game_state, opp_soldiers, degree, num_soldiers_opponent_on_board, index,
                                      op_color):
         if index == len(opp_soldiers):
             return degree
-        options = game_state.soldier_knowledge_base[op_color][opp_soldiers[index][0]].copy()
+        opp_knowledge_base = game_state.get_knowledge_base(op_color)
+        # options = game_state._soldier_knowledge_base[op_color][opp_soldiers[index][0]].copy()
+        options = opp_knowledge_base.get_options_for_soldier(opp_soldiers[index][0])
         random.shuffle(options)
         for i in options:
             if num_soldiers_opponent_on_board[i] > 0:

@@ -48,6 +48,11 @@ OP_COLOR = {
     Color.RED: Color.BLUE
 }
 
+UNMOVABLE = {
+    Degree.BOMB,
+    Degree.FLAG
+}
+
 
 NUM_OF_PLAYER_DEGREE_SOLDIERS = {
     Degree.BOMB: 6,
@@ -63,8 +68,6 @@ NUM_OF_PLAYER_DEGREE_SOLDIERS = {
     Degree.TEN: 1,
     Degree.FLAG: 1
 }
-
-NUM_OF_PLAYER_SOLDIERS = 40
 
 
 class Direction(Enum):

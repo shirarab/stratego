@@ -69,4 +69,4 @@ class StrategoGame(object):
             self._state.apply_action(blue_action)
             self._graphic.show_board(self._state)
         self._graphic.game_over(self._state.winner, self._state.score)
-        return self._state.score
+        return self._state.score, self._turn_count
