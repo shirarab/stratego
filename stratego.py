@@ -20,10 +20,10 @@ from agents.heuristics import *
 if __name__ == '__main__':
     graphic = ConsoleGraphic(10, 1)
     # graphic = GuiGraphic(10, 2)
-    red_agent = AlphaBetaAgent(Color.RED, graphic, InitRandomAgent(), depth=2,
-                                       heuristic=min_soldiers_opp_heuristic,
-                                       opponent_heuristic=min_soldiers_opp_heuristic,
-                                       get_legal_actions_opponent=do_not_use_me_ever)
+    red_agent = GuessingAlphaBetaAgent(Color.RED, graphic, InitRandomAgent(), depth=2,
+                               heuristic=sum_of_heuristics_heuristic,
+                               opponent_heuristic=sum_of_heuristics_heuristic,
+                               get_legal_actions_opponent=do_not_use_me_ever)
     # red_agent = RandomAgent(Color.RED, graphic)
     blue_agent = RandomAgent(Color.BLUE, graphic)
     # blue_agent = GuessingAlphaBetaAgent(Color.BLUE, graphic, InitRandomAgent(), depth=2,

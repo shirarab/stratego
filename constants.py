@@ -78,3 +78,5 @@ class Direction(Enum):
 
 
 DEGREE_OPTIONS_LIST = [j.value for j in Degree]
+
+NUM_OF_PLAYER_SOLDIERS = 40

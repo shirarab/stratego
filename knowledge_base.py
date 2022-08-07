@@ -125,3 +125,6 @@ class KnowledgeBase(object):
     def restore_kb(self, stored_info):
         (self._color, self._soldier_knowledge_base, self._degree_knowledge_base, self._singletons, self._do_update,
          self._degrees_to_update) = stored_info
+        
+    def get_living_soldiers(self):
+        return list(self._soldier_knowledge_base.keys())
