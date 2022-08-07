@@ -77,7 +77,8 @@ class GuessingAlphaBetaAgent(Agent):
             board[soldier.x][soldier.y] = Soldier(degree_opp[i], soldier.x, soldier.y, op_color)
 
         dead = {Color.RED: game_state.dead[Color.RED].copy(), Color.BLUE: game_state.dead[Color.BLUE].copy()}
-        return GameState(board, game_state.score, game_state.done, dead)
+        kb_info = {color: game_state.get_knowledge_base(color).store_kb() for color in OP_COLOR}
+        return GameState(board, game_state.score, game_state.done, dead, kb_info)
 
     def find_degree_for_opp_soldiers(self, game_state, opp_soldiers, degree, num_soldiers_opponent_on_board, index,
                                      op_color):

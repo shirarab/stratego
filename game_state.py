@@ -8,7 +8,7 @@ from action import Action
 
 
 class GameState(object):
-    def __init__(self, board, score=0, done=False, dead=None):
+    def __init__(self, board, score=0, done=False, dead=None, kb_info=None):
         """
         Create a new instance of game state
         
@@ -28,8 +28,12 @@ class GameState(object):
         else:
             self._dead = dead
         self._winner = Color.GRAY
+        
         self.knowledge_bases = {Color.RED: KnowledgeBase(color=Color.RED, game_state=self),
                                 Color.BLUE: KnowledgeBase(color=Color.BLUE, game_state=self)}
+        if kb_info is not None:
+            for col in self.knowledge_bases:
+                self.knowledge_bases[col].restore_kb(kb_info[col])
 
     @property
     def done(self):
