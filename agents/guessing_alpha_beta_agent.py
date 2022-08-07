@@ -32,6 +32,8 @@ class GuessingAlphaBetaAgent(Agent):
         self.store_alpha_beta(game_state, self.depth + 1, self.color)
         guessed_game_state = self.guessing_opponent_soldiers(game_state)
         val, action = self.alpha_beta(-float("inf"), float("inf"), guessed_game_state, self.depth, True)
+        action = Action(game_state.get_soldier_at_x_y(action.soldier.x, action.soldier.y), action.direction,
+                        action.num_steps)
         self.restore_alpha_beta(game_state, self.depth + 1, self.color)
         return action
 
@@ -75,7 +77,8 @@ class GuessingAlphaBetaAgent(Agent):
             board[soldier.x][soldier.y] = Soldier(degree_opp[i], soldier.x, soldier.y, op_color)
 
         dead = {Color.RED: game_state.dead[Color.RED].copy(), Color.BLUE: game_state.dead[Color.BLUE].copy()}
-        return GameState(board, game_state.score, game_state.done, dead)
+        kb_info = {color: game_state.get_knowledge_base(color).store_kb() for color in OP_COLOR}
+        return GameState(board, game_state.score, game_state.done, dead, kb_info)
 
     def find_degree_for_opp_soldiers(self, game_state, opp_soldiers, degree, num_soldiers_opponent_on_board, index,
                                      op_color):
