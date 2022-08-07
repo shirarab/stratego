@@ -18,8 +18,8 @@ from agents.opponent_actions import *
 from agents.heuristics import *
 
 if __name__ == '__main__':
-    # graphic = ConsoleGraphic(10, 0)
-    graphic = GuiGraphic(10, 2)
+    graphic = ConsoleGraphic(10, 1)
+    # graphic = GuiGraphic(10, 2)
     red_agent = GuessingAlphaBetaAgent(Color.RED, graphic, InitRandomAgent(), depth=2,
                                        heuristic=sum_of_heuristics_heuristic,
                                        opponent_heuristic=sum_of_heuristics_heuristic,
