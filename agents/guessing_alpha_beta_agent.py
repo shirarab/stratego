@@ -57,20 +57,20 @@ class GuessingAlphaBetaAgent(Agent):
             for j in range(BOARD_SIZE):
                 if j in {2, 3, 6, 7}:
                     board[4 + i][j] = Soldier(Degree.WATER, 4 + i, j, Color.WATER)
-        list_indexes = list(range(BOARD_SIZE))
-        pairs_i_j = list(itertools.product(list_indexes, list_indexes))
-        random.shuffle(pairs_i_j)
+
         opp_soldiers = []
-        for i, j in pairs_i_j:
-            soldier_info = game_state.board[i][j]
-            if soldier_info.color == op_color:
-                opp_soldiers.append(soldier_info)
-            if soldier_info.color == self.color:
-                board[i][j] = Soldier(soldier_info.degree, i, j, self.color)
+        for i in range(BOARD_SIZE):
+            for j in range(BOARD_SIZE):
+                soldier_info = game_state.board[i][j]
+                if soldier_info.color == op_color:
+                    opp_soldiers.append([soldier_info, len(game_state.soldier_knowledge_base[op_color][soldier_info])])
+                if soldier_info.color == self.color:
+                    board[i][j] = Soldier(soldier_info.degree, i, j, self.color)
+        opp_soldiers.sort(key=lambda x: x[1])
         degree_opp = self.find_degree_for_opp_soldiers(game_state, opp_soldiers, [], num_soldiers_opponent_on_board, 0,
                                                        op_color)
         for i in range(len(opp_soldiers)):
-            soldier = opp_soldiers[i]
+            soldier = opp_soldiers[i][0]
             board[soldier.x][soldier.y] = Soldier(degree_opp[i], soldier.x, soldier.y, op_color)
 
         dead = {Color.RED: game_state.dead[Color.RED].copy(), Color.BLUE: game_state.dead[Color.BLUE].copy()}
@@ -80,14 +80,14 @@ class GuessingAlphaBetaAgent(Agent):
                                      op_color):
         if index == len(opp_soldiers):
             return degree
-        options = game_state.soldier_knowledge_base[op_color][opp_soldiers[index]].copy()
+        options = game_state.soldier_knowledge_base[op_color][opp_soldiers[index][0]].copy()
         random.shuffle(options)
         for i in options:
             if num_soldiers_opponent_on_board[i] > 0:
                 degree.append(i)
                 num_soldiers_opponent_on_board[i] -= 1
                 return_val = self.find_degree_for_opp_soldiers(game_state, opp_soldiers, degree,
-                                                               num_soldiers_opponent_on_board, index + 1,op_color)
+                                                               num_soldiers_opponent_on_board, index + 1, op_color)
                 if return_val is not None:
                     degree = return_val
                     return degree

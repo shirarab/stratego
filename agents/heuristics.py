@@ -1,5 +1,7 @@
 from game_state import GameState
 from constants import Color
+
+
 # from soldier import Color
 
 
@@ -23,3 +25,10 @@ def min_soldiers_opp_heuristic(game_state: GameState, color: Color):
     for i in dead_opp:
         val += dead_opp[i]
     return val
+
+
+def min_opp_soldiers_max_my_soldiers_heuristic(game_state: GameState, color: Color):
+    val = 0
+    if game_state.done:
+        val += 20
+    return val + min_soldiers_opp_heuristic(game_state, color) + try_heuristic(game_state, color)

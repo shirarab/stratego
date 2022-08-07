@@ -18,8 +18,8 @@ if __name__ == '__main__':
     graphic = ConsoleGraphic(10, 0)
     # graphic = GuiGraphic(10, 2)
     red_agent = GuessingAlphaBetaAgent(Color.RED, graphic, InitRandomAgent(), depth=2,
-                                       heuristic=min_soldiers_opp_heuristic,
-                                       opponent_heuristic=min_soldiers_opp_heuristic,
+                                       heuristic=min_opp_soldiers_max_my_soldiers_heuristic,
+                                       opponent_heuristic=min_opp_soldiers_max_my_soldiers_heuristic,
                                        get_legal_actions_opponent=do_not_use_me_ever)
     # red_agent = RandomAgent(Color.RED, graphic)
     blue_agent = RandomAgent(Color.BLUE, graphic)
