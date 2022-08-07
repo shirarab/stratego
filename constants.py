@@ -64,6 +64,8 @@ NUM_OF_PLAYER_DEGREE_SOLDIERS = {
     Degree.FLAG: 1
 }
 
+NUM_OF_PLAYER_SOLDIERS = 40
+
 
 class Direction(Enum):
     UP = 1

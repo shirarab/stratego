@@ -1,3 +1,4 @@
+import copy
 import itertools
 from copy import deepcopy
 from constants import NUM_OF_PLAYER_DEGREE_SOLDIERS, Degree, BOARD_SIZE, OP_COLOR
@@ -32,6 +33,8 @@ class GuessingAlphaBetaAgent(Agent):
         self.store_alpha_beta(game_state, self.depth + 1, self.color)
         guessed_game_state = self.guessing_opponent_soldiers(game_state)
         val, action = self.alpha_beta(-float("inf"), float("inf"), guessed_game_state, self.depth, True)
+        action = Action(game_state.get_soldier_at_x_y(action.soldier.x, action.soldier.y), action.direction,
+                        action.num_steps)
         self.restore_alpha_beta(game_state, self.depth + 1, self.color)
         return action
 
@@ -74,7 +77,23 @@ class GuessingAlphaBetaAgent(Agent):
             board[soldier.x][soldier.y] = Soldier(degree_opp[i], soldier.x, soldier.y, op_color)
 
         dead = {Color.RED: game_state.dead[Color.RED].copy(), Color.BLUE: game_state.dead[Color.BLUE].copy()}
-        return GameState(board, game_state.score, game_state.done, dead)
+        KB_S = None
+        KB_D = None
+        # the alpha beta doesn't use the KB
+        # KB_S = {Color.RED: copy.deepcopy(game_state.soldier_knowledge_base[Color.RED]),
+        #         Color.BLUE: copy.deepcopy(game_state.soldier_knowledge_base[Color.BLUE])}
+        # KB_D = {Color.RED: copy.deepcopy(game_state.degree_knowledge_base[Color.RED]),
+        #         Color.BLUE: copy.deepcopy(game_state.degree_knowledge_base[Color.BLUE])}
+        # for color in [Color.RED, Color.BLUE]:
+        #     for s in KB_S[color]:
+        #         KB_S[board[s.x][s.y]] = KB_S[color][s]
+        #         KB_S[color].remove(s)
+        #     for deg in KB_D[color]:
+        #         for s in KB_D[color][deg].copy():
+        #             KB_D[color][deg].append(board[s.x][s.y])
+        #             KB_D[color][deg].remove(s)
+
+        return GameState(board, game_state.score, game_state.done, dead, KB_S, KB_D)
 
     def find_degree_for_opp_soldiers(self, game_state, opp_soldiers, degree, num_soldiers_opponent_on_board, index,
                                      op_color):

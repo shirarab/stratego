@@ -8,7 +8,7 @@ from action import Action
 
 
 class GameState(object):
-    def __init__(self, board, score=0, done=False, dead=None):
+    def __init__(self, board, score=0, done=False, dead=None, kb_s = None, kb_d = None):
         """
         Create a new instance of game state
         
@@ -30,17 +30,21 @@ class GameState(object):
         else:
             self._dead = dead
         self._winner = Color.GRAY
-        self.soldier_knowledge_base = {Color.RED: {}, Color.BLUE: {}}  # KB with soldier as keys, degrees as values
-        # KB with degree as key and soldiers as values
-        self.degree_knowledge_base = {Color.RED: {deg: [] for deg in Degree},
-                                      Color.BLUE: {deg: [] for deg in Degree}}
-        # init the knowledge base with full options for each opponent soldier:
-        for i in range(BOARD_SIZE):
-            for j in range(BOARD_SIZE):
-                if board[i][j].color == Color.RED or board[i][j].color == Color.BLUE:
-                    for deg in NUM_OF_PLAYER_DEGREE_SOLDIERS:
-                        self.degree_knowledge_base[board[i][j].color][deg].append(board[i][j])
-                    self.soldier_knowledge_base[board[i][j].color][board[i][j]] = DEGREE_OPTIONS_LIST.copy()
+        if kb_d is None and kb_s is None:
+            self.soldier_knowledge_base = {Color.RED: {}, Color.BLUE: {}}  # KB with soldier as keys, degrees as values
+            # KB with degree as key and soldiers as values
+            self.degree_knowledge_base = {Color.RED: {deg: [] for deg in Degree},
+                                          Color.BLUE: {deg: [] for deg in Degree}}
+            # init the knowledge base with full options for each opponent soldier:
+            for i in range(BOARD_SIZE):
+                for j in range(BOARD_SIZE):
+                    if board[i][j].color == Color.RED or board[i][j].color == Color.BLUE:
+                        for deg in NUM_OF_PLAYER_DEGREE_SOLDIERS:
+                            self.degree_knowledge_base[board[i][j].color][deg].append(board[i][j])
+                        self.soldier_knowledge_base[board[i][j].color][board[i][j]] = DEGREE_OPTIONS_LIST.copy()
+        else:
+            self.soldier_knowledge_base = kb_s
+            self.degree_knowledge_base = kb_d
 
     @property
     def done(self):
