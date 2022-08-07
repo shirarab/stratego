@@ -1,3 +1,6 @@
+import time
+from datetime import datetime
+
 from agents.alpha_beta_agent import AlphaBetaAgent
 from agents.guessing_alpha_beta_agent import GuessingAlphaBetaAgent
 from agents.human_agent import HumanAgent
@@ -27,7 +30,11 @@ if __name__ == '__main__':
     #                                     heuristic=sum_of_heuristics_heuristic,
     #                                     opponent_heuristic=sum_of_heuristics_heuristic,
     #                                     get_legal_actions_opponent=do_not_use_me_ever)
-
-    for i in range(1):
+    num_games = 1
+    for i in range(num_games):
         game = StrategoGame(red_agent, blue_agent, graphic, True)
-        score = game.run()
+        s_time = time.time()
+        score, turn_count = game.run()
+        e_time = time.time()
+        print(f"Time: {e_time - s_time} ms, Turns: {turn_count}")
+        
