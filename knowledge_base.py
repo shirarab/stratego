@@ -1,5 +1,5 @@
 from collections import Counter
-from copy import deepcopy, copy
+from copy import copy
 
 from constants import Color, Degree, BOARD_SIZE, DEGREE_OPTIONS_LIST, NUM_OF_PLAYER_DEGREE_SOLDIERS, UNMOVABLE
 # from game_state import GameState
@@ -61,12 +61,15 @@ class KnowledgeBase(object):
                                 self._singletons[new_single_degree] += 1
                                 self._do_update = True
                                 new_degrees_to_update.add(new_single_degree)
+                            if len(self._soldier_knowledge_base[soldier]) == 0:
+                                raise KnowledgeBaseContradiction(f"No options for soldier {soldier}")
                 # if the amount of soldiers that can have this degree equals to the total amount
                 if len(self._degree_knowledge_base[degree]) == on_board_count:
                     for optional_soldier in self._degree_knowledge_base[degree]:
-                        self._soldier_knowledge_base[optional_soldier] = [degree]
+                        # self._soldier_knowledge_base[optional_soldier] = [degree]
+                        self.add_new_singleton(optional_soldier, degree)
                 # if the options for the degree are LESS THAN the number we should have on the board, contradiction
-                if len(self._degree_knowledge_base[degree]) < on_board_count:
+                elif len(self._degree_knowledge_base[degree]) < on_board_count:
                     raise KnowledgeBaseContradiction(f"Not enough optional soldiers for degree {degree}")
                 self._degrees_to_update = new_degrees_to_update
     
@@ -75,6 +78,8 @@ class KnowledgeBase(object):
         Remove a soldier from the KB
         should be called when a soldier dies, since the KB should only contain info for living soldiers.
         """
+        if len(self._soldier_knowledge_base[soldier]) == 1:
+            self._singletons[soldier.degree] -= 1
         self._soldier_knowledge_base.pop(soldier, None)
         for deg in NUM_OF_PLAYER_DEGREE_SOLDIERS:
             if soldier in self._degree_knowledge_base[deg]:
@@ -84,10 +89,15 @@ class KnowledgeBase(object):
         """
         Add the info for a new soldier that was detected with certainty
         """
-        self._do_update = True
-        self._degrees_to_update.add(deg)
-        self._soldier_knowledge_base[soldier] = [deg]
-        self._singletons[deg] += 1
+        if len(self._soldier_knowledge_base[soldier]) > 1:
+            self._do_update = True
+            self._degrees_to_update.add(deg)
+            self._soldier_knowledge_base[soldier] = [deg]
+            self._singletons[deg] += 1
+        elif len(self._soldier_knowledge_base[soldier]) == 1 and self._soldier_knowledge_base[soldier][0] != deg:
+            raise KnowledgeBaseContradiction(
+                f"Tried to add singleton of degree {deg}, "
+                f"but soldier is already a singleton of degree {self._soldier_knowledge_base[soldier][0]}")
     
     def record_soldier_movement(self, soldier: Soldier):
         """
@@ -119,12 +129,12 @@ class KnowledgeBase(object):
         for deg in self._degree_knowledge_base:
             store_degree_kb[deg] = copy(self._degree_knowledge_base[deg])
         data = self._color, copy(self._soldier_knowledge_base), copy(self._degree_knowledge_base), \
-            copy(self._singletons), self._do_update, set(self._degrees_to_update)
+               copy(self._singletons), self._do_update, set(self._degrees_to_update)
         return data
     
     def restore_kb(self, stored_info):
         (self._color, self._soldier_knowledge_base, self._degree_knowledge_base, self._singletons, self._do_update,
          self._degrees_to_update) = stored_info
-        
+    
     def get_living_soldiers(self):
         return list(self._soldier_knowledge_base.keys())

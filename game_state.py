@@ -157,7 +157,8 @@ class GameState(object):
         self.dead[killed.color][killed.degree] += 1
         winner.set_show_me()
         self.knowledge_bases[killed.color].remove_soldier_from_kb(killed)  # delete dead soldier from KB
-        self.knowledge_bases[winner.color].add_new_singleton(winner, winner.degree)
+        if killed.degree != winner.degree:
+            self.knowledge_bases[winner.color].add_new_singleton(winner, winner.degree)
 
     def get_successor(self, action: Action):
         self.apply_action(action)
