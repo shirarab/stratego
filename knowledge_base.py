@@ -1,5 +1,6 @@
 from collections import Counter
 from copy import copy
+from typing import Dict
 
 from constants import Color, Degree, BOARD_SIZE, DEGREE_OPTIONS_LIST, NUM_OF_PLAYER_DEGREE_SOLDIERS, UNMOVABLE
 # from game_state import GameState
@@ -78,7 +79,7 @@ class KnowledgeBase(object):
         Remove a soldier from the KB
         should be called when a soldier dies, since the KB should only contain info for living soldiers.
         """
-        if len(self._soldier_knowledge_base[soldier]) == 1:
+        if len(self._soldier_knowledge_base[soldier]) == 1:  # if removing a singleton, update the counter
             self._singletons[soldier.degree] -= 1
         self._soldier_knowledge_base.pop(soldier, None)
         for deg in NUM_OF_PLAYER_DEGREE_SOLDIERS:
@@ -97,7 +98,11 @@ class KnowledgeBase(object):
         elif len(self._soldier_knowledge_base[soldier]) == 1 and self._soldier_knowledge_base[soldier][0] != deg:
             raise KnowledgeBaseContradiction(
                 f"Tried to add singleton of degree {deg}, "
-                f"but soldier is already a singleton of degree {self._soldier_knowledge_base[soldier][0]}")
+                f"but soldier is already a singleton of degree {self._soldier_knowledge_base[soldier][0]}"
+            )
+        elif deg not in self._soldier_knowledge_base[soldier]:
+            raise KnowledgeBaseContradiction(f"Tried to creat singleton of degree {deg}, but the current options for "
+                                             f"this soldier are: {self._soldier_knowledge_base[soldier]}")
     
     def record_soldier_movement(self, soldier: Soldier):
         """
@@ -129,7 +134,7 @@ class KnowledgeBase(object):
         for deg in self._degree_knowledge_base:
             store_degree_kb[deg] = copy(self._degree_knowledge_base[deg])
         data = self._color, copy(self._soldier_knowledge_base), copy(self._degree_knowledge_base), \
-               copy(self._singletons), self._do_update, set(self._degrees_to_update)
+            copy(self._singletons), self._do_update, set(self._degrees_to_update)
         return data
     
     def restore_kb(self, stored_info):
@@ -138,3 +143,19 @@ class KnowledgeBase(object):
     
     def get_living_soldiers(self):
         return list(self._soldier_knowledge_base.keys())
+    
+    def is_assignment_consistent(self, assignment: Dict[Soldier, Degree], game_state) -> bool:
+        """
+        Receives a partial assignment to soldiers, returns whether it is consistent with the current knowledge base
+        """
+        current_data = self.store_kb()
+        consistent = True
+        try:
+            for sol, deg in assignment.items():
+                self.add_new_singleton(sol, deg)
+            self.update(game_state)
+        except KnowledgeBaseContradiction:
+            consistent = False
+        self.restore_kb(current_data)
+        return consistent
+    
