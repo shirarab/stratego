@@ -1,5 +1,5 @@
 from agents.agent import Agent
-from constants import Degree, BOARD_SIZE, NUM_OF_PLAYER_DEGREE_SOLDIERS
+from constants import Degree, BOARD_SIZE, SOLDIER_COUNT_FOR_EACH_DEGREE
 from game_state import GameState
 from graphics.stratego_graphic import StrategoGraphic
 from constants import Color
@@ -39,8 +39,8 @@ class StrategoGame(object):
 
     def start_soldiers(self, color: Color):
         soldiers = set()
-        for degree in NUM_OF_PLAYER_DEGREE_SOLDIERS.keys():
-            for i in range(NUM_OF_PLAYER_DEGREE_SOLDIERS[degree]):
+        for degree in SOLDIER_COUNT_FOR_EACH_DEGREE.keys():
+            for i in range(SOLDIER_COUNT_FOR_EACH_DEGREE[degree]):
                 soldiers.add(Soldier(degree, 0, 0, color))
         return soldiers
 

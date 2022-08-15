@@ -1,14 +1,14 @@
 from game_state import GameState
-from constants import Color, Degree, NUM_OF_PLAYER_SOLDIERS, BOARD_SIZE, NUM_OF_PLAYER_DEGREE_SOLDIERS
+from constants import Color, Degree, NUM_OF_PLAYER_SOLDIERS, BOARD_SIZE, SOLDIER_COUNT_FOR_EACH_DEGREE
 from scipy import spatial
 # import numpy as np
 
 # from soldier import Color
 
 SUM_DEGREES_OF_PLAYER_FOR_HEURISTIC = sum(
-    [NUM_OF_PLAYER_DEGREE_SOLDIERS[deg] * deg for deg in Degree if
+    [SOLDIER_COUNT_FOR_EACH_DEGREE[deg] * deg for deg in Degree if
      deg not in [Degree.BOMB, Degree.THREE, Degree.WATER, Degree.EMPTY]] + [
-        NUM_OF_PLAYER_DEGREE_SOLDIERS[Degree.BOMB] * 5, NUM_OF_PLAYER_DEGREE_SOLDIERS[Degree.THREE] * 5])
+        SOLDIER_COUNT_FOR_EACH_DEGREE[Degree.BOMB] * 5, SOLDIER_COUNT_FOR_EACH_DEGREE[Degree.THREE] * 5])
 
 MAX_DISTANCE_TO_FLAG = BOARD_SIZE
 

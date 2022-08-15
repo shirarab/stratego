@@ -1,6 +1,6 @@
 # import itertools
 # from copy import deepcopy
-from constants import NUM_OF_PLAYER_DEGREE_SOLDIERS, Degree, BOARD_SIZE, OP_COLOR
+from constants import SOLDIER_COUNT_FOR_EACH_DEGREE, Degree, BOARD_SIZE, OP_COLOR
 from soldier import Soldier
 from agents.agent import Agent
 from action import Action
@@ -49,7 +49,7 @@ class GuessingAlphaBetaAgent(Agent):
     def guessing_opponent_soldiers(self, game_state: GameState):
         op_color = OP_COLOR[self.color]
         game_state.get_knowledge_base(op_color).update(game_state)
-        num_soldiers_opponent = Counter(NUM_OF_PLAYER_DEGREE_SOLDIERS.copy())
+        num_soldiers_opponent = Counter(SOLDIER_COUNT_FOR_EACH_DEGREE.copy())
         num_dead_soldiers_opponent = Counter(game_state.dead[op_color].copy())
         num_soldiers_opponent_on_board = num_soldiers_opponent - num_dead_soldiers_opponent
 

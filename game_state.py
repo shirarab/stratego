@@ -1,6 +1,6 @@
 from typing import Set
 from copy import deepcopy
-from constants import Degree, DEAD_SOLDIERS, BOARD_SIZE
+from constants import Degree, DEAD_SOLDIERS, BOARD_SIZE, OP_COLOR
 from constants import Color, Direction
 from knowledge_base import KnowledgeBase
 from soldier import Soldier
@@ -29,8 +29,8 @@ class GameState(object):
             self._dead = dead
         self._winner = Color.GRAY
         
-        self.knowledge_bases = {Color.RED: KnowledgeBase(color=Color.RED, game_state=self),
-                                Color.BLUE: KnowledgeBase(color=Color.BLUE, game_state=self)}
+        self.knowledge_bases = {Color.RED: KnowledgeBase(color=Color.RED, board=self._board),
+                                Color.BLUE: KnowledgeBase(color=Color.BLUE, board=self._board)}
         if kb_info is not None:
             for col in self.knowledge_bases:
                 self.knowledge_bases[col].restore_kb(kb_info[col])
@@ -63,11 +63,13 @@ class GameState(object):
     def get_knowledge_base(self, color: Color):
         return self.knowledge_bases[color]
 
-    def get_soldier_legal_actions(self, soldier: Soldier):
+    def get_soldier_legal_actions(self, soldier: Soldier, assumed_degree: Degree = None):
         legal_actions = set()
-        if soldier.degree in {Degree.BOMB, Degree.FLAG, Degree.EMPTY, Degree.WATER}:
+        if assumed_degree is None:
+            assumed_degree = soldier.degree
+        if assumed_degree in {Degree.BOMB, Degree.FLAG, Degree.EMPTY, Degree.WATER}:
             return legal_actions
-        if soldier.degree == Degree.TWO:
+        if assumed_degree == Degree.TWO:
             for direction in Direction:
                 for num_steps in range(1, BOARD_SIZE):
                     is_good_move, next_is_empty = self._is_legal_move(direction, soldier, num_steps)
@@ -125,9 +127,9 @@ class GameState(object):
     #     run_another_check = True
     #     while run_another_check:
     #         run_another_check = False
-    #         for degree in NUM_OF_PLAYER_DEGREE_SOLDIERS:
+    #         for degree in SOLDIER_COUNT_FOR_EACH_DEGREE:
     #             dead_count = self._dead[color][degree]
-    #             on_board_count = NUM_OF_PLAYER_DEGREE_SOLDIERS[degree] - dead_count
+    #             on_board_count = SOLDIER_COUNT_FOR_EACH_DEGREE[degree] - dead_count
     #             # if we already detected all the soldiers of this type
     #             if on_board_count == singletons[degree]:
     #                 for soldier in self.degree_knowledge_base[color][degree].copy():
@@ -145,31 +147,38 @@ class GameState(object):
     #
     # def remove_soldier_from_kb(self, color: Color, soldier: Soldier):
     #     self.soldier_knowledge_base[color].pop(soldier, None)
-    #     for deg in NUM_OF_PLAYER_DEGREE_SOLDIERS:
+    #     for deg in SOLDIER_COUNT_FOR_EACH_DEGREE:
     #         if soldier in self.degree_knowledge_base[color][deg]:
     #             self.degree_knowledge_base[color][deg].remove(soldier)
     
-    def shot_and_dead(self, killed: Soldier, winner: Soldier):
+    def shot_and_dead(self, killed: Soldier, winner: Soldier, keep_record=True):
         """
         Kill the given soldier and expose the identity of the winning soldier.
         """
         killed.kill_me()
         self.dead[killed.color][killed.degree] += 1
         winner.set_show_me()
-        self.knowledge_bases[killed.color].remove_soldier_from_kb(killed)  # delete dead soldier from KB
-        if killed.degree != winner.degree:
-            self.knowledge_bases[winner.color].add_new_singleton(winner, winner.degree)
+        if keep_record:
+            self.knowledge_bases[killed.color].remove_soldier_from_kb(killed)  # delete dead soldier from KB
+            if killed.degree != winner.degree:
+                self.knowledge_bases[winner.color].add_new_singleton(winner, winner.degree)
 
     def get_successor(self, action: Action):
-        self.apply_action(action)
+        # check if we need to record in kb
+        self.apply_action(action, keep_record_in_kb=False)
         return self
 
-    def apply_action(self, action: Action):
+    def apply_action(self, action: Action, keep_record_in_kb=True):
+        """
+        keep_record_in_kb should be set to False if this action is part of a search tree and not an actual game
+        action (this is important especially for opponent actions, as the guessed actions can lead to KB contradictions)
+        """
         # we assume that action can only be legal
         if self._done or action is None:
             return
-
-        self.record_action_in_kb(action)
+        
+        if keep_record_in_kb:
+            self.record_action_in_kb(action)
         
         sol_x = action.soldier.x
         sol_y = action.soldier.y
@@ -192,30 +201,30 @@ class GameState(object):
         elif opponent.degree == Degree.BOMB:
             if action.soldier.degree == Degree.THREE:
                 instead_opponent = action.soldier
-                self.shot_and_dead(opponent, action.soldier)
+                self.shot_and_dead(opponent, action.soldier, keep_record_in_kb)
                 action.soldier.set_position(op_x, op_y)
             else:
-                self.shot_and_dead(action.soldier, opponent)
+                self.shot_and_dead(action.soldier, opponent, keep_record_in_kb)
         elif opponent.degree == Degree.FLAG:
             instead_opponent = action.soldier
-            self.shot_and_dead(opponent, action.soldier)
+            self.shot_and_dead(opponent, action.soldier, keep_record_in_kb)
             action.soldier.set_position(op_x, op_y)
             self._done = True
             self._winner = action.soldier.color
         elif opponent.degree == Degree.TEN and action.soldier.degree == Degree.ONE:
             instead_opponent = action.soldier
-            self.shot_and_dead(opponent, action.soldier)
+            self.shot_and_dead(opponent, action.soldier, keep_record_in_kb)
             action.soldier.set_position(op_x, op_y)
         elif opponent.degree > action.soldier.degree:
-            self.shot_and_dead(action.soldier, opponent)
+            self.shot_and_dead(action.soldier, opponent, keep_record_in_kb)
         elif opponent.degree < action.soldier.degree:
             instead_opponent = action.soldier
-            self.shot_and_dead(opponent, action.soldier)
+            self.shot_and_dead(opponent, action.soldier, keep_record_in_kb)
             action.soldier.set_position(op_x, op_y)
         elif opponent.degree == action.soldier.degree:
             instead_opponent = Soldier(Degree.EMPTY, sol_x, sol_y, Color.GRAY)
-            self.shot_and_dead(action.soldier, opponent)
-            self.shot_and_dead(opponent, action.soldier)
+            self.shot_and_dead(action.soldier, opponent, keep_record_in_kb)
+            self.shot_and_dead(opponent, action.soldier, keep_record_in_kb)
         self._board[sol_x][sol_y] = instead_me
         self._board[op_x][op_y] = instead_opponent
 
@@ -224,7 +233,24 @@ class GameState(object):
         if action.num_steps > 1:
             self.knowledge_bases[action.soldier.color].add_new_singleton(action.soldier, Degree.TWO)
         else:
-            self.knowledge_bases[action.soldier.color].record_soldier_movement(action.soldier)
+            self.knowledge_bases[action.soldier.color].record_movable_soldier(action.soldier)
+            
+    def get_unblocked_soldiers(self, color: Color) -> Set[Soldier]:
+        """
+        Return a set of all soldiers from this color which have any available moving directions (directions that
+        are not blocked by soldiers of the same color, water/edges/etc.)
+        """
+        soldiers_set = set()
+        free_colors = {OP_COLOR[color], Color.GRAY}
+        for r in range(BOARD_SIZE):
+            for c in range(BOARD_SIZE):
+                if self._board[r][c].color == color:
+                    surrounding_indices = {(r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)}
+                    for (x, y) in surrounding_indices:
+                        neighbor = self.get_soldier_at_x_y(x, y)
+                        if neighbor and neighbor.color in free_colors:
+                            soldiers_set.add(self._board[r][c])
+        return soldiers_set
 
     def store(self):
         stored_info_me = {"score": self._score, "done": self._done, "winner": self._winner,
@@ -234,7 +260,7 @@ class GameState(object):
             for j in range(BOARD_SIZE):
                 soldier_info = self._board[i][j].store()
                 stored_info_me["board"][(i, j)] = self._board[i][j], soldier_info
-        for color in Color.RED, Color.BLUE:
+        for color in OP_COLOR:
             stored_info_me["kbs"][color] = self.knowledge_bases[color].store_kb()
         return stored_info_me
 
@@ -243,7 +269,7 @@ class GameState(object):
         self._done = stored_info_me["done"]
         self._winner = stored_info_me["winner"]
         self._dead = stored_info_me["dead"]
-        for color in Color.RED, Color.BLUE:
+        for color in OP_COLOR:
             self.knowledge_bases[color].restore_kb(stored_info_me["kbs"][color])
         for i in range(BOARD_SIZE):
             for j in range(BOARD_SIZE):
