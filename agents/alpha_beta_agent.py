@@ -45,8 +45,9 @@ class AlphaBetaAgent(Agent):
             if depth == 0 or not legal_actions:
                 return self.heuristic(game_state, self.color), None
             max_action = None
+            self.store_alpha_beta(game_state, depth, self.color)
             for action in legal_actions:
-                self.store_alpha_beta(game_state, depth, self.color)
+                # self.store_alpha_beta(game_state, depth, self.color)
                 board = game_state.get_successor(action)
                 new_alpha = self.alpha_beta(alpha, beta, game_state, depth, False)[0]
                 self.restore_alpha_beta(board, depth, self.color)
@@ -62,8 +63,9 @@ class AlphaBetaAgent(Agent):
             if depth == 0 or not legal_actions:
                 return self.opponent_heuristic(game_state, op_color), None
             min_action = None
+            self.store_alpha_beta(game_state, depth, op_color)
             for action in legal_actions:
-                self.store_alpha_beta(game_state, depth, op_color)
+                # self.store_alpha_beta(game_state, depth, op_color)
                 board = self._get_successor_opponent(game_state, action, op_color)
                 new_beta = self.alpha_beta(alpha, beta, game_state, depth - 1, True)[0]
                 self.restore_alpha_beta(board, depth, op_color)

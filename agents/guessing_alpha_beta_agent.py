@@ -27,8 +27,12 @@ class GuessingAlphaBetaAgent(Agent):
         self._get_legal_actions_opponent = get_legal_actions_opponent
         self._get_successor_opponent = get_successor_opponents
         self._stored_by_depth = {}
+        self.op_color = Color.RED if self.color == Color.BLUE else Color.BLUE
 
     def get_action(self, game_state: GameState) -> Action:
+        if random.randint(1, 100) >= 95:
+            legal_actions = game_state.get_legal_actions(self.color)
+            return random.sample(legal_actions, 1)[0]
         self.store_alpha_beta(game_state, self.depth + 1, self.color)
         guessed_game_state = self.guessing_opponent_soldiers(game_state)
         val, action = self.alpha_beta(-float("inf"), float("inf"), guessed_game_state, self.depth, True)
@@ -59,41 +63,53 @@ class GuessingAlphaBetaAgent(Agent):
             for j in range(BOARD_SIZE):
                 if j in {2, 3, 6, 7}:
                     board[4 + i][j] = Soldier(Degree.WATER, 4 + i, j, Color.WATER)
-
+        can_op_soldier_be_flag = {}
+        my_knowledge_base = game_state.get_knowledge_base(self.color)
         opp_soldiers = []
         for i in range(BOARD_SIZE):
             for j in range(BOARD_SIZE):
                 soldier_info = game_state.board[i][j]
                 if soldier_info.color == op_color:
                     opp_soldiers.append([soldier_info,
-                                    game_state.get_knowledge_base(op_color).option_count_for_soldier(soldier_info)])
+                                         game_state.get_knowledge_base(op_color).option_count_for_soldier(
+                                             soldier_info)])
                 if soldier_info.color == self.color:
                     board[i][j] = Soldier(soldier_info.degree, i, j, self.color)
+                    my_options = my_knowledge_base.get_options_for_soldier(soldier_info)
+                    can_op_soldier_be_flag[board[i][j]] = True if Degree.FLAG in my_options else False
+
+        # random.shuffle(opp_soldiers)
         opp_soldiers.sort(key=lambda x: x[1])
+        opp_knowledge_base = game_state.get_knowledge_base(op_color)
+        options = [opp_knowledge_base.get_options_for_soldier(opp_soldiers[index][0]) for index in range(len(opp_soldiers))]
+        for i in range(len(options)):
+            random.shuffle(options[i])
         degree_opp = self.find_degree_for_opp_soldiers(game_state, opp_soldiers, [], num_soldiers_opponent_on_board, 0,
-                                                       op_color)
+                                                       op_color, options)
+
         for i in range(len(opp_soldiers)):
             soldier = opp_soldiers[i][0]
             board[soldier.x][soldier.y] = Soldier(degree_opp[i], soldier.x, soldier.y, op_color)
+            can_op_soldier_be_flag[board[soldier.x][soldier.y]] = True if Degree.FLAG in options[i] else False
 
         dead = {Color.RED: game_state.dead[Color.RED].copy(), Color.BLUE: game_state.dead[Color.BLUE].copy()}
         # kb_info = {color: game_state.get_knowledge_base(color).store_kb() for color in OP_COLOR}
-        return GameState(board, game_state.score, game_state.done, dead, kb_info=None)
+        return GameState(board, game_state.score, game_state.done, dead, None, can_op_soldier_be_flag)
 
     def find_degree_for_opp_soldiers(self, game_state, opp_soldiers, degree, num_soldiers_opponent_on_board, index,
-                                     op_color):
+                                     op_color, options):
         if index == len(opp_soldiers):
             return degree
-        opp_knowledge_base = game_state.get_knowledge_base(op_color)
         # options = game_state._soldier_knowledge_base[op_color][opp_soldiers[index][0]].copy()
-        options = opp_knowledge_base.get_options_for_soldier(opp_soldiers[index][0])
-        random.shuffle(options)
-        for i in options:
+        # options = opp_knowledge_base.get_options_for_soldier(opp_soldiers[index][0])
+
+        # random.shuffle(options)
+        for i in options[index]:
             if num_soldiers_opponent_on_board[i] > 0:
                 degree.append(i)
                 num_soldiers_opponent_on_board[i] -= 1
                 return_val = self.find_degree_for_opp_soldiers(game_state, opp_soldiers, degree,
-                                                               num_soldiers_opponent_on_board, index + 1, op_color)
+                                                               num_soldiers_opponent_on_board, index + 1, op_color, options)
                 if return_val is not None:
                     degree = return_val
                     return degree
@@ -104,12 +120,15 @@ class GuessingAlphaBetaAgent(Agent):
 
     def alpha_beta(self, alpha, beta, game_state: GameState, depth, is_max_node):
         if is_max_node:
+            if depth == 0:
+                return self.heuristic(game_state, self.color), None
             legal_actions = game_state.get_legal_actions(self.color)
-            if depth == 0 or not legal_actions:
+            if not legal_actions:
                 return self.heuristic(game_state, self.color), None
             max_action = None
+            self.store_alpha_beta(game_state, depth, self.color)
             for action in legal_actions:
-                self.store_alpha_beta(game_state, depth, self.color)
+                # self.store_alpha_beta(game_state, depth, self.color)
                 board = game_state.get_successor(action)
                 new_alpha = self.alpha_beta(alpha, beta, game_state, depth, False)[0]
                 self.restore_alpha_beta(board, depth, self.color)
@@ -120,16 +139,18 @@ class GuessingAlphaBetaAgent(Agent):
                     break
             return alpha, max_action
         else:
-            op_color = Color.RED if self.color == Color.BLUE else Color.BLUE
-            legal_actions = game_state.get_legal_actions(op_color)
-            if depth == 0 or not legal_actions:
-                return self.opponent_heuristic(game_state, op_color), None
+            if depth == 0:
+                return self.opponent_heuristic(game_state, self.op_color), None
+            legal_actions = game_state.get_legal_actions(self.op_color)
+            if not legal_actions:
+                return self.opponent_heuristic(game_state, self.op_color), None
             min_action = None
+            self.store_alpha_beta(game_state, depth, self.op_color)
             for action in legal_actions:
-                self.store_alpha_beta(game_state, depth, op_color)
-                board = self._get_successor_opponent(game_state, action, op_color)
+                # self.store_alpha_beta(game_state, depth, op_color)
+                board = self._get_successor_opponent(game_state, action, self.op_color)
                 new_beta = self.alpha_beta(alpha, beta, game_state, depth - 1, True)[0]
-                self.restore_alpha_beta(board, depth, op_color)
+                self.restore_alpha_beta(board, depth, self.op_color)
                 if new_beta < beta:
                     min_action = action
                     beta = new_beta
