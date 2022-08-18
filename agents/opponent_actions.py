@@ -14,5 +14,5 @@ def do_not_use_me_ever(game_state: GameState, color: Color) -> Set[Action]:
     return game_state.get_legal_actions(color)
 
 
-def null_get_successor_opponent(game_state:GameState, action: Action, color: Color) -> GameState:
+def null_get_successor_opponent(game_state: GameState, action: Action, color: Color) -> GameState:
     return game_state.get_successor(action)

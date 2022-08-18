@@ -16,11 +16,11 @@ from agents.heuristics import *
 if __name__ == '__main__':
     # graphic = ConsoleGraphic(10, 2)
     graphic = GuiGraphic(10, 2)
-    # red_agent = AlphaBetaAgent(Color.RED, graphic, InitRandomAgent(), depth=2,
-    #                            heuristic=try_heuristic, opponent_heuristic=try_heuristic,
-    #                            get_legal_actions_opponent=do_not_use_me_ever)
-    red_agent = RandomAgent(Color.RED, graphic)
-    blue_agent = RandomAgent(Color.BLUE, graphic, InitHumanAgent())
+    red_agent = AlphaBetaAgent(Color.RED, graphic, InitHillClimbingAgent(init_take_1_heuristic), depth=2,
+                               heuristic=try_heuristic, opponent_heuristic=try_heuristic,
+                               get_legal_actions_opponent=do_not_use_me_ever)
+    # red_agent = RandomAgent(Color.RED, graphic, InitHillClimbingAgent(init_take_1_heuristic))
+    blue_agent = RandomAgent(Color.BLUE, graphic)
     game = StrategoGame(red_agent, blue_agent, graphic, True)
     score = game.run()
 

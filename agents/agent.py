@@ -7,7 +7,7 @@ from agents.heuristics import null_heuristic
 
 
 class Agent(object):
-    def __init__(self, color, graphic: StrategoGraphic, init_agent: InitAgent,
+    def __init__(self, color, graphic: StrategoGraphic, init_agent: InitAgent = None,
                  heuristic=null_heuristic, opponent_heuristic=null_heuristic, depth: int = 1):
         self._heuristic = heuristic
         self._opponent_heuristic = opponent_heuristic

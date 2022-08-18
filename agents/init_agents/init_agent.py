@@ -8,11 +8,8 @@ from soldier import Soldier#, Color
 from graphics.stratego_graphic import StrategoGraphic
 
 
-
-
-
 class InitAgent(object):
-    def __init__(self, heuristic = init_null_heuristic):
+    def __init__(self, heuristic=init_null_heuristic):
         self._heuristic = heuristic
 
     @property
