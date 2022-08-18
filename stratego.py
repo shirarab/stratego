@@ -1,4 +1,9 @@
+import time
+from datetime import datetime
+
 from agents.alpha_beta_agent import AlphaBetaAgent
+from agents.guessing_alpha_beta_agent import GuessingAlphaBetaAgent
+
 from agents.human_agent import HumanAgent
 from agents.init_agents.init_hill_climbing_agent import InitHillClimbingAgent
 from agents.init_agents.init_human_agent import InitHumanAgent
@@ -14,6 +19,7 @@ from agents.opponent_actions import *
 from agents.heuristics import *
 
 if __name__ == '__main__':
+# <<<<<<< HEAD
     # graphic = ConsoleGraphic(10, 2)
     graphic = GuiGraphic(10, 2)
     red_agent = AlphaBetaAgent(Color.RED, graphic, InitHillClimbingAgent(init_take_1_heuristic), depth=2,
@@ -23,4 +29,30 @@ if __name__ == '__main__':
     blue_agent = RandomAgent(Color.BLUE, graphic)
     game = StrategoGame(red_agent, blue_agent, graphic, True)
     score = game.run()
-
+# =======
+#     graphic = ConsoleGraphic(10, 0)
+#     # graphic = GuiGraphic(10, 2)
+#     # red_agent = AlphaBetaAgent(Color.RED, graphic, InitRandomAgent(), depth=2,
+#     #                            heuristic=sum_of_heuristics_heuristic,
+#     #                            opponent_heuristic=sum_of_heuristics_heuristic,
+#     #                            get_legal_actions_opponent=legal_actions_from_subset_guess,
+#     #                            get_successor_opponents=naive_opp_get_successor)
+#     red_agent = GuessingAlphaBetaAgent(Color.RED, graphic, InitRandomAgent(), depth=2,
+#                                        heuristic=sum_of_heuristics_heuristic,
+#                                        opponent_heuristic=min_opp_soldiers_num_heuristic,
+#                                        get_legal_actions_opponent=do_not_use_me_ever)
+#     # red_agent = RandomAgent(Color.RED, graphic)
+#     # blue_agent = RandomAgent(Color.BLUE, graphic)
+#     blue_agent = GuessingAlphaBetaAgent(Color.BLUE, graphic, InitRandomAgent(), depth=2,
+#                                         heuristic=min_opp_soldiers_num_heuristic,
+#                                         opponent_heuristic=sum_of_heuristics_heuristic,
+#                                         get_legal_actions_opponent=do_not_use_me_ever)
+# >>>>>>> ea2ff9ce5bc24a5bced1e8b4ac4dcdb4da210720
+#
+#     num_games = 10
+#     for i in range(num_games):
+#         game = StrategoGame(red_agent, blue_agent, graphic, True)
+#         s_time = time.time()
+#         score, turn_count = game.run()
+#         e_time = time.time()
+#         print(f"Time: {e_time - s_time} sec, Turns: {turn_count}")

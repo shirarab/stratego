@@ -43,7 +43,18 @@ class Color(Enum):
     WATER = 3
 
 
-NUM_OF_PLAYER_DEGREE_SOLDIERS = {
+OP_COLOR = {
+    Color.BLUE: Color.RED,
+    Color.RED: Color.BLUE
+}
+
+UNMOVABLE = {
+    Degree.BOMB,
+    Degree.FLAG
+}
+
+
+SOLDIER_COUNT_FOR_EACH_DEGREE = {
     Degree.BOMB: 6,
     Degree.ONE: 1,
     Degree.TWO: 8,
@@ -64,3 +75,10 @@ class Direction(Enum):
     DOWN = 2
     LEFT = 3
     RIGHT = 4
+
+
+DEGREE_OPTIONS_LIST = [j.value for j in Degree]
+
+PLAYER_SOLDIER_DEGREES_LIST = [d for d in SOLDIER_COUNT_FOR_EACH_DEGREE]
+
+NUM_OF_PLAYER_SOLDIERS = 40

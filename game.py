@@ -1,5 +1,5 @@
 from agents.agent import Agent
-from constants import Degree, BOARD_SIZE, NUM_OF_PLAYER_DEGREE_SOLDIERS
+from constants import Degree, BOARD_SIZE, SOLDIER_COUNT_FOR_EACH_DEGREE
 from game_state import GameState
 from graphics.stratego_graphic import StrategoGraphic
 from constants import Color
@@ -14,6 +14,7 @@ class StrategoGame(object):
         self._graphic = graphic
         self._state: GameState = None
         self._game_ended = False
+        self._turn_count = 0
         self._sleep_between_actions = sleep_between_actions
 
     def get_initial_board(self):
@@ -38,8 +39,8 @@ class StrategoGame(object):
 
     def start_soldiers(self, color: Color):
         soldiers = set()
-        for degree in NUM_OF_PLAYER_DEGREE_SOLDIERS.keys():
-            for i in range(NUM_OF_PLAYER_DEGREE_SOLDIERS[degree]):
+        for degree in SOLDIER_COUNT_FOR_EACH_DEGREE.keys():
+            for i in range(SOLDIER_COUNT_FOR_EACH_DEGREE[degree]):
                 soldiers.add(Soldier(degree, 0, 0, color))
         return soldiers
 
@@ -55,6 +56,7 @@ class StrategoGame(object):
         while not self._state.done:
             # if self._sleep_between_actions:
             #     time.sleep(10)
+            self._turn_count += 1
             red_action = self._red_agent.get_action(self._state)
             self._state.apply_action(red_action)
             self._graphic.show_board(self._state)
@@ -62,8 +64,9 @@ class StrategoGame(object):
                 break
             # if self._sleep_between_actions:
             #     time.sleep(10)
+            self._turn_count += 1
             blue_action = self._blue_agent.get_action(self._state)
             self._state.apply_action(blue_action)
             self._graphic.show_board(self._state)
         self._graphic.game_over(self._state.winner, self._state.score)
-        return self._state.score
+        return self._state.score, self._turn_count
