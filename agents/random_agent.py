@@ -9,7 +9,7 @@ from graphics.stratego_graphic import StrategoGraphic
 
 
 class RandomAgent(Agent):
-    def __init__(self, color, graphic: StrategoGraphic = None, init_agent: InitAgent = None):
+    def __init__(self, color, graphic: StrategoGraphic = None, init_agent: InitAgent = None, **kwargs):
         super().__init__(color, graphic, init_agent)
         if init_agent is None:
             self._init_agent = InitRandomAgent()

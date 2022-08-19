@@ -134,6 +134,9 @@ class KnowledgeBase(object):
     
     def get_moved_soldiers(self):
         return set(self._moved_soldiers)
+
+    def has_soldier_moved(self, soldier: Soldier):
+        return soldier in self._moved_soldiers
     
     def option_count_for_soldier(self, soldier: Soldier):
         return len(self._soldier_knowledge_base[soldier])

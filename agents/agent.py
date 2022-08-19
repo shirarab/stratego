@@ -39,6 +39,10 @@ class Agent(object):
     def graphic(self):
         return self._graphic
 
+    @graphic.setter
+    def graphic(self, graphic):
+        self._graphic = graphic
+
     @property
     def heuristic(self):
         return self._heuristic

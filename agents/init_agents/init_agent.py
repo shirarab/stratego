@@ -4,7 +4,7 @@ from typing import Set
 
 from agents.init_agents.init_heuristics import init_null_heuristic
 from constants import Color
-from soldier import Soldier#, Color
+from soldier import Soldier
 from graphics.stratego_graphic import StrategoGraphic
 
 

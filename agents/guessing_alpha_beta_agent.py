@@ -1,5 +1,3 @@
-# import itertools
-# from copy import deepcopy
 from constants import SOLDIER_COUNT_FOR_EACH_DEGREE, Degree, BOARD_SIZE, OP_COLOR
 from soldier import Soldier
 from agents.agent import Agent

@@ -202,8 +202,7 @@ class GameState(object):
         # if the number of steps > 1 we can update this to be degree 2 (exposed in the knowledge base)
         if action.num_steps > 1:
             self.knowledge_bases[action.soldier.color].add_new_singleton(action.soldier, Degree.TWO)
-        else:
-            self.knowledge_bases[action.soldier.color].record_movable_soldier(action.soldier)
+        self.knowledge_bases[action.soldier.color].record_movable_soldier(action.soldier)
 
     def get_unblocked_soldiers(self, color: Color) -> Set[Soldier]:
         """
