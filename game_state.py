@@ -121,42 +121,6 @@ class GameState(object):
             self._winner = Color.RED if agent_color == Color.BLUE else Color.BLUE
         return legal_actions
 
-    # def update_knowledge_base(self, color: Color):
-    #     """
-    #     Get the color of a player and update its knowledge base according to game rules constraints, such as total
-    #     number of each type of soldier
-    #     """
-    #     singletons = Counter()  # counting how many singletons from each degree
-    #     for soldier, options in self.soldier_knowledge_base[color].items():
-    #         if len(options) == 1:
-    #             singletons[options[0]] += 1
-    #     run_another_check = True
-    #     while run_another_check:
-    #         run_another_check = False
-    #         for degree in SOLDIER_COUNT_FOR_EACH_DEGREE:
-    #             dead_count = self._dead[color][degree]
-    #             on_board_count = SOLDIER_COUNT_FOR_EACH_DEGREE[degree] - dead_count
-    #             # if we already detected all the soldiers of this type
-    #             if on_board_count == singletons[degree]:
-    #                 for soldier in self.degree_knowledge_base[color][degree].copy():
-    #                     if len(self.soldier_knowledge_base[color][soldier]) > 1:
-    #                         self.soldier_knowledge_base[color][soldier].remove(degree)
-    #                         self.degree_knowledge_base[color][degree].remove(soldier)
-    #                         # if by removing the degree from the KB we created a new singleton, run another iteration
-    #                         if len(self.soldier_knowledge_base[color][soldier]) == 1:
-    #                             singletons[self.soldier_knowledge_base[color][soldier][0]] += 1
-    #                             run_another_check = True
-    #             # if the amount of soldiers that can have this degree equals to the total amount
-    #             if len(self.degree_knowledge_base[color][degree]) <= on_board_count:
-    #                 for optional_soldier in self.degree_knowledge_base[color][degree]:
-    #                     self.soldier_knowledge_base[color][optional_soldier] = [degree]
-    #
-    # def remove_soldier_from_kb(self, color: Color, soldier: Soldier):
-    #     self.soldier_knowledge_base[color].pop(soldier, None)
-    #     for deg in SOLDIER_COUNT_FOR_EACH_DEGREE:
-    #         if soldier in self.degree_knowledge_base[color][deg]:
-    #             self.degree_knowledge_base[color][deg].remove(soldier)
-
     def shot_and_dead(self, killed: Soldier, winner: Soldier, keep_record=True):
         """
         Kill the given soldier and expose the identity of the winning soldier.

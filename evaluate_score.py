@@ -25,6 +25,7 @@ def evaluate_weighted_num_soldiers(game_state: GameState, color: Color):
                     sum -= rankW * soldier.degree
                 if i < 6:
                     sum -= distW * (6 - i) ** 2
+
             elif soldier.color == op_color:
                 sum -= pieceW
                 if soldier.show_me:
