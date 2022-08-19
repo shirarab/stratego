@@ -120,3 +120,75 @@ def sum_of_heuristics_heuristic(game_state: GameState, color: Color):
     val += small_dist_opp_to_flag_heuristic(game_state, color)
     # val += 8 * distance_to_opp_flag_heuristic(game_state, color)
     return val
+
+
+# http://users.utcluj.ro/~agroza/papers/2018/stratego.pdf
+def num_soldiers_difference_heuristic(game_state: GameState, color: Color):
+    sum = 0
+    op_color = Color.BLUE if color == Color.RED else Color.RED
+    for i in range(BOARD_SIZE):
+        for j in range(BOARD_SIZE):
+            soldier = game_state.board[i][j]
+            if soldier.color == color:
+                sum += 1
+            elif soldier.color == op_color:
+                sum -= 1
+    return sum
+
+
+# pieceW, rankW, moveW, distW = 1, 0.05, 0.03, 0.02
+pieceW, rankW, moveW, distW, flagW = 1.4, 0.045, 0.03, 0.018, 2
+
+
+def better_num_soldiers_difference_heuristic(game_state: GameState, color: Color):
+    sum = 0
+    op_color = Color.BLUE if color == Color.RED else Color.RED
+    for i in range(BOARD_SIZE):
+        for j in range(BOARD_SIZE):
+            soldier = game_state.board[i][j]
+            if soldier.color == color:
+                sum += pieceW
+                sum -= rankW * (10 - soldier.degree)
+                if soldier.show_me:
+                    sum += rankW * soldier.degree ** 2
+                if i < 6:
+                    sum -= distW * (6 - i) ** 2
+                # if soldier.degree == Degree.FLAG:  # or soldier.degree == Degree.ONE:
+                #     sum += get_sum_around_soldier(game_state, i, j, color)
+            elif soldier.color == op_color:
+                sum -= pieceW
+                if soldier.show_me:
+                    sum += rankW * soldier.degree ** 2
+                if i > 3:
+                    sum += distW * (i - 3) ** 2
+    return sum
+
+
+# i-1j-1      i-1j        i-1j+1
+# ij-1        ij          ij+1
+# i+1j-1      i+1j        i+1j+1
+def get_sum_around_soldier(game_state: GameState, i: int, j: int, color: Color) -> float:
+    sum: float = 0
+    op_color = Color.BLUE if color == Color.RED else Color.RED
+    positions = [(i - 1, j - 1, 1), (i - 1, j, 20), (i - 1, j + 1, 1),
+                 (i, j - 1, 20), (i, j + 1, 20),
+                 (i + 1, j - 1, 1), (i + 1, j, 20), (i + 1, j + 1, 1)]
+    for (x, y, w) in positions:
+        if not (0 <= x < BOARD_SIZE and 0 <= y < BOARD_SIZE):
+            continue
+        soldier = game_state.board[x][y]
+        op = -1 if soldier.color == op_color else 1
+        if soldier.degree != Degree.EMPTY:
+            sum += flagW * w * soldier.degree * op
+        else:
+            sum += flagW * w * -9 * op
+    # print(f"shira flag sum: {sum}")
+    return sum
+
+# try not to reveal 10
+# once 10 revealed- it should attack only identified pieces.
+# 1 and 9 should be together as long as they can
+# if enemy gets close to a piece it can kill- bring a 2 (without him knowing) for it to chase instead
+# attack pieces from high to low
+# never leave flag unprotected
+# start with moving lower pieces and then once enemy's pieces are revealed kill them with higher ranks

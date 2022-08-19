@@ -20,7 +20,35 @@ from agents.init_agents.init_heuristics import *
 from agents.opponent_actions import *
 
 
+def main():
+    parser = argparse.ArgumentParser(description='Stratego Game.')
+    displays = ['ConsoleGraphic', 'GuiGraphic']
+    agents = ['RandomAgent', 'HumanAgent', 'AlphaBetaAgent', 'GuessingAlphaBetaAgent']
+    init_agents = ['InitRandomAgent', 'InitHumanAgent', 'InitHillClimbingAgent']
+    parser.add_argument('-g', '--display', dest='display',
+                        choices=displays, help='The game ui.', default=displays[0], type=str)
+    parser.add_argument('-p', '--num_of_players', dest='num_of_players',
+                        choices=[0, 1, 2], help='The number of players to show on board.', default=1, type=int)
+    parser.add_argument('-ra', '--red_agent', dest='red_agent',
+                        choices=agents, help='The red agent.', default=agents[0], type=str)
+    parser.add_argument('-ba', '--blue_agent', dest='blue_agent',
+                        choices=agents, help='The blue agent.', default=agents[0], type=str)
+    parser.add_argument('-ria', '--red_init_agent', dest='red_init_agent',
+                        choices=init_agents, help='The red init agent.', default=init_agents[0], type=str)
+    parser.add_argument('-bia', '--blue_init_agent', dest='blue_init_agent',
+                        choices=init_agents, help='The blue init agent.', default=init_agents[0], type=str)
+    parser.add_argument('-d', '--depth', dest='depth',
+                        help='The maximum depth for to search in the game tree.', default=2, type=int)
+    parser.add_argument('-n', '--num_of_games', dest='num_of_games',
+                        help='The number of games to run.', default=1, type=int)
+    args = parser.parse_args()
+
+    # parser.print_help()
+
+
 if __name__ == '__main__':
+    # main()
+
     # graphic = ConsoleGraphic(10, 0)
     graphic = GuiGraphic(10, 2)
     red_agent = AlphaBetaAgent(Color.RED, graphic, InitHillClimbingAgent(init_take_1_heuristic), depth=2,

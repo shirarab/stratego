@@ -7,15 +7,13 @@ from soldier import Soldier
 
 
 class StrategoGame(object):
-    def __init__(self, red_agent: Agent, blue_agent: Agent, graphic: StrategoGraphic,
-                 sleep_between_actions: bool = False):
+    def __init__(self, red_agent: Agent, blue_agent: Agent, graphic: StrategoGraphic):
         self._red_agent = red_agent
         self._blue_agent = blue_agent
         self._graphic = graphic
         self._state: GameState = None
         self._game_ended = False
         self._turn_count = 0
-        self._sleep_between_actions = sleep_between_actions
 
     def get_initial_board(self):
         red_board = self._red_agent.get_initial_positions()
@@ -54,16 +52,12 @@ class StrategoGame(object):
 
     def _game_loop(self):
         while not self._state.done:
-            # if self._sleep_between_actions:
-            #     time.sleep(10)
             self._turn_count += 1
             red_action = self._red_agent.get_action(self._state)
             self._state.apply_action(red_action)
             self._graphic.show_board(self._state)
             if self._state.done:
                 break
-            # if self._sleep_between_actions:
-            #     time.sleep(10)
             self._turn_count += 1
             blue_action = self._blue_agent.get_action(self._state)
             self._state.apply_action(blue_action)
