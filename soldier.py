@@ -1,3 +1,4 @@
+
 class Soldier(object):
     def __init__(self, degree, position_x, position_y, color):
         self._degree = degree

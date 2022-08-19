@@ -8,7 +8,7 @@ from action import Action
 
 
 class GameState(object):
-    def __init__(self, board, score=0, done=False, dead=None, kb_info=None):
+    def __init__(self, board, score=0, done=False, dead=None, kb_info=None, can_op_soldier_be_flag=None):
         """
         Create a new instance of game state
         
@@ -23,6 +23,8 @@ class GameState(object):
         self._board = board
         self._score = score
         self._done = done
+
+        self.can_op_soldier_be_flag = can_op_soldier_be_flag # can be None
         if dead is None:
             self._dead = {Color.RED: DEAD_SOLDIERS.copy(), Color.BLUE: DEAD_SOLDIERS.copy()}
         else:
