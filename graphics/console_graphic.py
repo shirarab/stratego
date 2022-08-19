@@ -1,8 +1,6 @@
 from typing import Set, Tuple, List
 
-# from action import Direction
 from constants import Degree, Color, Direction
-# from degree import Degree
 from game_state import GameState
 from graphics.stratego_graphic import StrategoGraphic, RED, BLUE, DEGREE_TO_STR, DIRECTION_MAP
 from soldier import Soldier
@@ -24,7 +22,12 @@ class ConsoleGraphic(StrategoGraphic):
                 soldier = game_state.get_soldier_at_x_y(i, j)
                 degree = self.degree_to_print(soldier.degree)
                 if soldier.color == Color.RED:
-                    square_to_print += RED + degree + ' |'
+                    # square_to_print += RED + degree + ' |'
+                    square_to_print += RED + degree
+                    if soldier.show_me:
+                        square_to_print += '*|'
+                    else:
+                        square_to_print += ' |'
                 elif soldier.color == Color.BLUE:
                     square_to_print += BLUE
                     if self.num_players_to_show == 2 or soldier.show_me:

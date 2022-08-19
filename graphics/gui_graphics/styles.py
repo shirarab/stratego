@@ -29,7 +29,9 @@ MAIN_STYLE = {'highlightbackground': 'deep pink', 'highlightthickness': 2, **NOR
 
 BASIC_SOLDIER_STYLE = {
     'font': ('Courier', 20),
-    'fg': 'white'
+    'fg': 'white',
+    'width': 2,
+    # 'height': 2
 }
 
 EMPTY_SOLDIER_STYLE = {
