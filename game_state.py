@@ -24,13 +24,13 @@ class GameState(object):
         self._score = score
         self._done = done
 
-        self.can_op_soldier_be_flag = can_op_soldier_be_flag # can be None
+        self.can_op_soldier_be_flag = can_op_soldier_be_flag  # can be None
         if dead is None:
             self._dead = {Color.RED: DEAD_SOLDIERS.copy(), Color.BLUE: DEAD_SOLDIERS.copy()}
         else:
             self._dead = dead
         self._winner = Color.GRAY
-        
+
         self.knowledge_bases = {Color.RED: KnowledgeBase(color=Color.RED, board=self._board),
                                 Color.BLUE: KnowledgeBase(color=Color.BLUE, board=self._board)}
         if kb_info is not None:
@@ -44,6 +44,10 @@ class GameState(object):
     @property
     def score(self):
         return self._score
+
+    @score.setter
+    def score(self, value):
+        self._score = value
 
     @property
     def board(self):
@@ -61,7 +65,7 @@ class GameState(object):
         if 0 <= x < BOARD_SIZE and 0 <= y < BOARD_SIZE:
             return self.board[x][y]
         return None
-    
+
     def get_knowledge_base(self, color: Color):
         return self.knowledge_bases[color]
 
@@ -116,7 +120,7 @@ class GameState(object):
             self._done = True
             self._winner = Color.RED if agent_color == Color.BLUE else Color.BLUE
         return legal_actions
-    
+
     # def update_knowledge_base(self, color: Color):
     #     """
     #     Get the color of a player and update its knowledge base according to game rules constraints, such as total
@@ -152,7 +156,7 @@ class GameState(object):
     #     for deg in SOLDIER_COUNT_FOR_EACH_DEGREE:
     #         if soldier in self.degree_knowledge_base[color][deg]:
     #             self.degree_knowledge_base[color][deg].remove(soldier)
-    
+
     def shot_and_dead(self, killed: Soldier, winner: Soldier, keep_record=True):
         """
         Kill the given soldier and expose the identity of the winning soldier.
@@ -178,10 +182,10 @@ class GameState(object):
         # we assume that action can only be legal
         if self._done or action is None:
             return
-        
+
         if keep_record_in_kb:
             self.record_action_in_kb(action)
-        
+
         sol_x = action.soldier.x
         sol_y = action.soldier.y
         op_x = sol_x
@@ -236,7 +240,7 @@ class GameState(object):
             self.knowledge_bases[action.soldier.color].add_new_singleton(action.soldier, Degree.TWO)
         else:
             self.knowledge_bases[action.soldier.color].record_movable_soldier(action.soldier)
-            
+
     def get_unblocked_soldiers(self, color: Color) -> Set[Soldier]:
         """
         Return a set of all soldiers from this color which have any available moving directions (directions that
@@ -256,8 +260,8 @@ class GameState(object):
 
     def store(self):
         stored_info_me = {"score": self._score, "done": self._done, "winner": self._winner,
-                        "kbs": dict(),
-                        "dead": deepcopy(self._dead), "board": dict()}
+                          "kbs": dict(),
+                          "dead": deepcopy(self._dead), "board": dict()}
         for i in range(BOARD_SIZE):
             for j in range(BOARD_SIZE):
                 soldier_info = self._board[i][j].store()

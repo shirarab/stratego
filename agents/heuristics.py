@@ -2,7 +2,7 @@ import math
 import random
 
 from game_state import GameState
-from constants import Color, Degree, NUM_OF_PLAYER_SOLDIERS, BOARD_SIZE, SOLDIER_COUNT_FOR_EACH_DEGREE
+from constants import Color, Degree, NUM_OF_PLAYER_SOLDIERS, BOARD_SIZE, SOLDIER_COUNT_FOR_EACH_DEGREE, OP_COLOR
 from scipy import spatial
 
 # import numpy as np
@@ -123,42 +123,26 @@ def sum_of_heuristics_heuristic(game_state: GameState, color: Color):
 
 
 # http://users.utcluj.ro/~agroza/papers/2018/stratego.pdf
-def num_soldiers_difference_heuristic(game_state: GameState, color: Color):
-    sum = 0
-    op_color = Color.BLUE if color == Color.RED else Color.RED
-    for i in range(BOARD_SIZE):
-        for j in range(BOARD_SIZE):
-            soldier = game_state.board[i][j]
-            if soldier.color == color:
-                sum += 1
-            elif soldier.color == op_color:
-                sum -= 1
-    return sum
-
-
-# pieceW, rankW, moveW, distW = 1, 0.05, 0.03, 0.02
-pieceW, rankW, moveW, distW, flagW = 1.4, 0.045, 0.03, 0.018, 2
-
 
 def better_num_soldiers_difference_heuristic(game_state: GameState, color: Color):
+    # pieceW, rankW, moveW, distW = 1, 0.05, 0.03, 0.02
+    pieceW, rankW, moveW, distW, flagW = 1.4, 0.045, 0.03, 0.018, 2
+
     sum = 0
-    op_color = Color.BLUE if color == Color.RED else Color.RED
+    op_color = OP_COLOR[color]
     for i in range(BOARD_SIZE):
         for j in range(BOARD_SIZE):
             soldier = game_state.board[i][j]
             if soldier.color == color:
                 sum += pieceW
-                sum -= rankW * (10 - soldier.degree)
                 if soldier.show_me:
-                    sum += rankW * soldier.degree ** 2
+                    sum -= rankW * soldier.degree
                 if i < 6:
                     sum -= distW * (6 - i) ** 2
-                # if soldier.degree == Degree.FLAG:  # or soldier.degree == Degree.ONE:
-                #     sum += get_sum_around_soldier(game_state, i, j, color)
             elif soldier.color == op_color:
                 sum -= pieceW
                 if soldier.show_me:
-                    sum += rankW * soldier.degree ** 2
+                    sum += rankW * soldier.degree
                 if i > 3:
                     sum += distW * (i - 3) ** 2
     return sum

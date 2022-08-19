@@ -1,6 +1,7 @@
 import time
 import argparse
 
+from evaluate_score import evaluate_num_soldiers
 from graphics.console_graphic import ConsoleGraphic
 from graphics.gui_graphic import GuiGraphic
 
@@ -49,15 +50,15 @@ def main():
 if __name__ == '__main__':
     # main()
 
-    # graphic = ConsoleGraphic(10, 0)
-    graphic = GuiGraphic(10, 2)
-    red_agent = AlphaBetaAgent(Color.RED, graphic, InitHillClimbingAgent(init_take_1_heuristic), depth=2,
-                               heuristic=random_heuristic, opponent_heuristic=random_heuristic,
-                               get_legal_actions_opponent=do_not_use_me_ever)
-    # red_agent = RandomAgent(Color.RED, graphic, InitHillClimbingAgent(init_take_1_heuristic))
+    graphic = ConsoleGraphic(10, 0)
+    # graphic = GuiGraphic(10, 2)
+    # red_agent = AlphaBetaAgent(Color.RED, graphic, InitHillClimbingAgent(init_take_1_heuristic), depth=2,
+    #                            heuristic=random_heuristic, opponent_heuristic=random_heuristic,
+    #                            get_legal_actions_opponent=do_not_use_me_ever)
+    red_agent = RandomAgent(Color.RED, graphic, InitHillClimbingAgent(init_take_1_heuristic))
     blue_agent = RandomAgent(Color.BLUE, graphic)
-    game = StrategoGame(red_agent, blue_agent, graphic)
-    score = game.run()
+    # game = StrategoGame(red_agent, blue_agent, graphic, evaluate_num_soldiers)
+    # score = game.run()
     # =======
     #     # red_agent = AlphaBetaAgent(Color.RED, graphic, InitRandomAgent(), depth=2,
     #     #                            heuristic=sum_of_heuristics_heuristic,
@@ -75,9 +76,9 @@ if __name__ == '__main__':
     #                                         opponent_heuristic=sum_of_heuristics_heuristic,
     #                                         get_legal_actions_opponent=do_not_use_me_ever)
 
-    num_of_games = 10
+    num_of_games = 2
     for i in range(num_of_games):
-        game = StrategoGame(red_agent, blue_agent, graphic)
+        game = StrategoGame(red_agent, blue_agent, graphic, evaluate_num_soldiers)
         s_time = time.time()
         score, turn_count = game.run()
         e_time = time.time()

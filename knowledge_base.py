@@ -139,7 +139,7 @@ class KnowledgeBase(object):
     def store_kb(self):
         store_soldier_kb, store_degree_kb = dict(), dict()
         for sol in self._soldier_knowledge_base:
-            store_soldier_kb[sol] = deepcopy(self._soldier_knowledge_base[sol])
+            store_soldier_kb[sol] = copy(self._soldier_knowledge_base[sol])
         for deg in self._degree_knowledge_base:
             store_degree_kb[deg] = copy(self._degree_knowledge_base[deg])
         data = self._color, store_soldier_kb, store_degree_kb, \
@@ -152,7 +152,10 @@ class KnowledgeBase(object):
     
     def get_living_soldiers(self):
         return list(self._soldier_knowledge_base.keys())
-    
+
+    def get_living_soldiers_count(self):
+        return len(self._soldier_knowledge_base)
+
     def is_assignment_consistent(self, assignment: Dict[Soldier, Degree], game_state) -> bool:
         """
         Receives a partial assignment to soldiers, returns whether it is consistent with the current knowledge base

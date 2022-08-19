@@ -1,3 +1,5 @@
+from typing import Callable
+
 from agents.agent import Agent
 from constants import Degree, BOARD_SIZE, SOLDIER_COUNT_FOR_EACH_DEGREE
 from game_state import GameState
@@ -7,13 +9,15 @@ from soldier import Soldier
 
 
 class StrategoGame(object):
-    def __init__(self, red_agent: Agent, blue_agent: Agent, graphic: StrategoGraphic):
+    def __init__(self, red_agent: Agent, blue_agent: Agent, graphic: StrategoGraphic,
+                 evaluate_score: Callable[[GameState, Color], float]):
         self._red_agent = red_agent
         self._blue_agent = blue_agent
         self._graphic = graphic
         self._state: GameState = None
         self._game_ended = False
         self._turn_count = 0
+        self._evaluate_score = evaluate_score
 
     def get_initial_board(self):
         red_board = self._red_agent.get_initial_positions()
@@ -62,5 +66,6 @@ class StrategoGame(object):
             blue_action = self._blue_agent.get_action(self._state)
             self._state.apply_action(blue_action)
             self._graphic.show_board(self._state)
+            self._state.score = self._evaluate_score(self._state, Color.RED)
         self._graphic.game_over(self._state.winner, self._state.score)
         return self._state.score, self._turn_count
