@@ -1,0 +1,57 @@
+usage: stratego.py [-h] [-g {console,gui}] [-p {0,1,2}] [-d DEPTH]
+                   [-n NUM_OF_GAMES]
+                   [-ria {InitRandomAgent,InitHumanAgent,InitHillClimbingAgent}]
+                   [-bia {InitRandomAgent,InitHumanAgent,InitHillClimbingAgent}]
+                   [-ra {RandomAgent,HumanAgent,AlphaBetaAgent,GuessingAlphaBetaAgent}]
+                   [-ba {RandomAgent,HumanAgent,AlphaBetaAgent,GuessingAlphaBetaAgent}]
+                   [-e EVALUATION_FUNCTION] [-rih RED_INIT_HEURISTIC]
+                   [-bih BLUE_INIT_HEURISTIC] [-rh RED_HEURISTIC]
+                   [-bh BLUE_HEURISTIC] [-roh RED_OPPONENT_HEURISTIC]
+                   [-boh BLUE_OPPONENT_HEURISTIC]
+                   [-rola RED_GET_LEGAL_ACTIONS_OPPONENT]
+                   [-bola BLUE_GET_LEGAL_ACTIONS_OPPONENT]
+                   [-ros RED_GET_SUCCESSOR_OPPONENTS]
+                   [-bos BLUE_GET_SUCCESSOR_OPPONENTS]
+
+Stratego Game.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -g {console,gui}, --display {console,gui}
+                        The game ui.
+  -p {0,1,2}, --num_players_to_show {0,1,2}
+                        The number of players to show on board.
+  -d DEPTH, --depth DEPTH
+                        The maximum depth for to search in the game tree.
+  -n NUM_OF_GAMES, --num_of_games NUM_OF_GAMES
+                        The number of games to run.
+  -ria {InitRandomAgent,InitHumanAgent,InitHillClimbingAgent}, --red_init_agent {InitRandomAgent,InitHumanAgent,InitHillClimbingAgent}
+                        The red init agent.
+  -bia {InitRandomAgent,InitHumanAgent,InitHillClimbingAgent}, --blue_init_agent {InitRandomAgent,InitHumanAgent,InitHillClimbingAgent}
+                        The blue init agent.
+  -ra {RandomAgent,HumanAgent,AlphaBetaAgent,GuessingAlphaBetaAgent}, --red_agent {RandomAgent,HumanAgent,AlphaBetaAgent,GuessingAlphaBetaAgent}
+                        The red agent.
+  -ba {RandomAgent,HumanAgent,AlphaBetaAgent,GuessingAlphaBetaAgent}, --blue_agent {RandomAgent,HumanAgent,AlphaBetaAgent,GuessingAlphaBetaAgent}
+                        The blue agent.
+  -e EVALUATION_FUNCTION, --evaluation_function EVALUATION_FUNCTION
+                        The evaluation function for ai agent.
+  -rih RED_INIT_HEURISTIC, --red_init_heuristic RED_INIT_HEURISTIC
+                        The red agent init heuristic.
+  -bih BLUE_INIT_HEURISTIC, --blue_init_heuristic BLUE_INIT_HEURISTIC
+                        The blue agent init heuristic.
+  -rh RED_HEURISTIC, --red_heuristic RED_HEURISTIC
+                        The red agent heuristic.
+  -bh BLUE_HEURISTIC, --blue_heuristic BLUE_HEURISTIC
+                        The blue agent heuristic.
+  -roh RED_OPPONENT_HEURISTIC, --red_opponent_heuristic RED_OPPONENT_HEURISTIC
+                        The red agent opponent heuristic.
+  -boh BLUE_OPPONENT_HEURISTIC, --blue_opponent_heuristic BLUE_OPPONENT_HEURISTIC
+                        The blue agent opponent heuristic.
+  -rola RED_GET_LEGAL_ACTIONS_OPPONENT, --red_get_legal_actions_opponent RED_GET_LEGAL_ACTIONS_OPPONENT
+                        The get legal actions of red opponent.
+  -bola BLUE_GET_LEGAL_ACTIONS_OPPONENT, --blue_get_legal_actions_opponent BLUE_GET_LEGAL_ACTIONS_OPPONENT
+                        The get legal actions of blue opponent.
+  -ros RED_GET_SUCCESSOR_OPPONENTS, --red_get_successor_opponents RED_GET_SUCCESSOR_OPPONENTS
+                        The get successor of red opponent.
+  -bos BLUE_GET_SUCCESSOR_OPPONENTS, --blue_get_successor_opponents BLUE_GET_SUCCESSOR_OPPONENTS
+                        The get successor of blue opponent.
