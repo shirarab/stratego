@@ -64,7 +64,7 @@ red init hill climbing agent, init_take_1_heuristic:
 
 blue alpha beta agent, random_heuristic, ...:
 1. --blue_agent AlphaBetaAgent --blue_heuristic random_heuristic
-2. -ba AlphaBetaAgent --bh random_heuristic
+2. -ba AlphaBetaAgent -bh random_heuristic
 """
 
 """
