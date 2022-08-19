@@ -2,6 +2,10 @@ from constants import Color, OP_COLOR, BOARD_SIZE
 from game_state import GameState
 
 
+def null_evaluate_score(game_state: GameState, color: Color):
+    return 0
+
+
 def evaluate_num_soldiers(game_state: GameState, color: Color):
     op_color = OP_COLOR[color]
     red_living_soldiers = game_state.get_knowledge_base(color).get_living_soldiers_count()
