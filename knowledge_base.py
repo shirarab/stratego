@@ -139,7 +139,7 @@ class KnowledgeBase(object):
     def store_kb(self):
         store_soldier_kb, store_degree_kb = dict(), dict()
         for sol in self._soldier_knowledge_base:
-            store_soldier_kb[sol] = deepcopy(self._soldier_knowledge_base[sol])
+            store_soldier_kb[sol] = copy(self._soldier_knowledge_base[sol])
         for deg in self._degree_knowledge_base:
             store_degree_kb[deg] = copy(self._degree_knowledge_base[deg])
         data = self._color, store_soldier_kb, store_degree_kb, \
