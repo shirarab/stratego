@@ -21,8 +21,8 @@ from agents.opponent_actions import *
 
 
 if __name__ == '__main__':
-    # graphic = ConsoleGraphic(10, 0)
-    graphic = GuiGraphic(10, 2)
+    graphic = ConsoleGraphic(10, 1)
+    # graphic = GuiGraphic(10, 2)
     red_agent = AlphaBetaAgent(Color.RED, graphic, InitHillClimbingAgent(init_take_1_heuristic), depth=2,
                                heuristic=random_heuristic, opponent_heuristic=random_heuristic,
                                get_legal_actions_opponent=do_not_use_me_ever)
@@ -47,7 +47,7 @@ if __name__ == '__main__':
     #                                         opponent_heuristic=sum_of_heuristics_heuristic,
     #                                         get_legal_actions_opponent=do_not_use_me_ever)
 
-    num_of_games = 10
+    num_of_games = 2
     for i in range(num_of_games):
         game = StrategoGame(red_agent, blue_agent, graphic)
         s_time = time.time()
