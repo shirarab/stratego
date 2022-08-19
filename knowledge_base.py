@@ -27,6 +27,7 @@ class KnowledgeBase(object):
         self._color = color
         self._soldier_knowledge_base = dict()  # KB with soldier as keys, degrees as values
         self._degree_knowledge_base = {deg: [] for deg in SOLDIER_COUNT_FOR_EACH_DEGREE}
+        self._moved_soldiers = set()
         self._singletons = Counter()
         self._do_update = False
         self._degrees_to_update = set()
@@ -117,6 +118,7 @@ class KnowledgeBase(object):
         """
         If a soldier has moved, record that it can't be bomb or flag
         """
+        self._moved_soldiers.add(soldier)
         for unmovable_degree in UNMOVABLE:
             if unmovable_degree in self._soldier_knowledge_base[soldier]:
                 self._degrees_to_update.add(unmovable_degree)
@@ -129,6 +131,9 @@ class KnowledgeBase(object):
             self.add_new_singleton(soldier, self._soldier_knowledge_base[soldier][0])
         if len(self._soldier_knowledge_base[soldier]) == 0:
             raise KnowledgeBaseContradiction(f"No options left for soldier {soldier}")
+    
+    def get_moved_soldiers(self):
+        return set(self._moved_soldiers)
     
     def option_count_for_soldier(self, soldier: Soldier):
         return len(self._soldier_knowledge_base[soldier])
