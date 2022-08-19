@@ -6,6 +6,7 @@ from agents.heuristics import *
 from agents.opponent_actions import *
 from graphics.stratego_graphic import StrategoGraphic
 
+
 # from evaluate_score import evaluate_num_soldiers
 # from graphics.console_graphic import ConsoleGraphic
 # from graphics.gui_graphic import GuiGraphic
@@ -41,6 +42,30 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+"""
+Possible Command Line Arguments:
+
+empty console:
+1. --display console --num_players_to_show 0
+2. -g console -p 0
+
+6 games:
+1. --num_of_games 6
+2. -n 6
+
+evaluation function=evaluate_num_soldiers:
+1. --evaluation_function evaluate_num_soldiers
+2. -e evaluate_num_soldiers
+
+red init hill climbing agent, init_take_1_heuristic:
+1. --red_init_agent InitHillClimbingAgent --red_init_heuristic init_take_1_heuristic
+2. -ria InitHillClimbingAgent -rih init_take_1_heuristic
+
+blue alpha beta agent, random_heuristic, ...:
+1. --blue_agent AlphaBetaAgent --blue_heuristic random_heuristic
+2. -ba AlphaBetaAgent --bh random_heuristic
+"""
 
 """
     # do not uncomment this!!!!!
