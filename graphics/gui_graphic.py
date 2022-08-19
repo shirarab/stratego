@@ -1,13 +1,9 @@
-import time
 from typing import List, Set, Tuple
-# from action import Direction
 from constants import Degree, Color, DEAD_SOLDIERS, Direction
-# from degree import Degree
-from game_state import GameState#, DEAD_SOLDIERS
+from game_state import GameState
 from graphics.stratego_graphic import StrategoGraphic, DEGREE_TO_STR
-from soldier import Soldier#, Color
+from soldier import Soldier
 
-import tkinter as tk
 from graphics.gui_graphics.texts import *
 from graphics.gui_graphics.styles import *
 from tkinter import messagebox, PhotoImage
@@ -118,8 +114,10 @@ class GuiGraphic(StrategoGraphic):
         # right side
         self._outline_red_frame.pack(side=tk.TOP)
         self._red_board_frame.pack()
+        # self._red_board_frame.grid_propagate(False)
         self._outline_blue_frame.pack(side=tk.BOTTOM)
         self._blue_board_frame.pack()
+        # self._blue_board_frame.grid_propagate(False)
 
         # self._soldiers_frame.pack(fill=tk.X)
 
