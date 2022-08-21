@@ -1,4 +1,4 @@
-from constants import SOLDIER_COUNT_FOR_EACH_DEGREE, Degree, BOARD_SIZE, OP_COLOR
+from constants import SOLDIER_COUNT_FOR_EACH_DEGREE, Degree, BOARD_SIZE, OP_COLOR, Direction
 from soldier import Soldier
 from agents.agent import Agent
 from action import Action
@@ -121,6 +121,26 @@ class GuessingAlphaBetaAgent(Agent):
 
         return None
 
+    def find_opp_soldier_we_revealed(self, action: Action, game_state: GameState):
+        sol_x = action.soldier.x
+        sol_y = action.soldier.y
+        op_x = sol_x
+        op_y = sol_y
+        if action.direction == Direction.UP:
+            op_x += action.num_steps
+        if action.direction == Direction.DOWN:
+            op_x -= action.num_steps
+        if action.direction == Direction.RIGHT:
+            op_y += action.num_steps
+        if action.direction == Direction.LEFT:
+            op_y -= action.num_steps
+        opponent = game_state.get_soldier_at_x_y(op_x, op_y)
+        if (opponent.color == self.op_color and action.soldier.color == self.color) or (
+                opponent.color == self.color and action.soldier.color == self.op_color):
+            return opponent
+
+        return None
+
     def alpha_beta(self, alpha, beta, game_state: GameState, depth, is_max_node):
         if is_max_node:
             if depth == 0:
@@ -132,8 +152,21 @@ class GuessingAlphaBetaAgent(Agent):
             self.store_alpha_beta(game_state, depth, self.color)
             for action in legal_actions:
                 # self.store_alpha_beta(game_state, depth, self.color)
+                soldier_revealed = self.find_opp_soldier_we_revealed(action, game_state)
+                need_restore = [False, False]
+                if soldier_revealed is not None:
+                    if game_state.can_op_soldier_be_flag[soldier_revealed]:
+                        game_state.can_op_soldier_be_flag[soldier_revealed] = False
+                        need_restore[0] = True
+                    if game_state.can_op_soldier_be_flag[action.soldier]:
+                        game_state.can_op_soldier_be_flag[action.soldier] = False
+                        need_restore[1] = True
                 board = game_state.get_successor(action)
                 new_alpha = self.alpha_beta(alpha, beta, game_state, depth, False)[0]
+                if need_restore[0]:
+                    game_state.can_op_soldier_be_flag[soldier_revealed] = True
+                if need_restore[1]:
+                    game_state.can_op_soldier_be_flag[action.soldier] = True
                 self.restore_alpha_beta(board, depth, self.color)
                 if new_alpha > alpha:
                     max_action = action
@@ -151,8 +184,21 @@ class GuessingAlphaBetaAgent(Agent):
             self.store_alpha_beta(game_state, depth, self.op_color)
             for action in legal_actions:
                 # self.store_alpha_beta(game_state, depth, op_color)
+                soldier_revealed = self.find_opp_soldier_we_revealed(action, game_state)
+                need_restore = [False, False]
+                if soldier_revealed is not None:
+                    if game_state.can_op_soldier_be_flag[soldier_revealed]:
+                        game_state.can_op_soldier_be_flag[soldier_revealed] = False
+                        need_restore[0] = True
+                    if game_state.can_op_soldier_be_flag[action.soldier]:
+                        game_state.can_op_soldier_be_flag[action.soldier] = False
+                        need_restore[1] = True
                 board = self._get_successor_opponent(game_state, action, self.op_color)
                 new_beta = self.alpha_beta(alpha, beta, game_state, depth - 1, True)[0]
+                if need_restore[0]:
+                    game_state.can_op_soldier_be_flag[soldier_revealed] = True
+                if need_restore[1]:
+                    game_state.can_op_soldier_be_flag[action.soldier] = True
                 self.restore_alpha_beta(board, depth, self.op_color)
                 if new_beta < beta:
                     min_action = action
