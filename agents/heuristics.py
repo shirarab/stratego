@@ -98,14 +98,20 @@ def min_of_opp_soldiers_that_are_flag_options_heuristic(game_state: GameState, c
     is_done = math.inf if game_state.done else 0
     if is_done != 0:
         return is_done
+    op_color = Color.RED if color == Color.BLUE else Color.BLUE
     if game_state.can_op_soldier_be_flag is None:
-        return 0
+        op_soldiers_knowledge_base = game_state.get_knowledge_base(op_color)
+        val = 0
+        for s in op_soldiers_knowledge_base.get_living_soldiers():
+            val += 0 if Degree.FLAG in op_soldiers_knowledge_base.get_options_for_soldier(s) else 1
+        return val
+
     else:
         val = 0
-        op_color = Color.RED if color == Color.BLUE else Color.BLUE
-        for s in game_state.get_knowledge_base(op_color).get_living_soldiers():
-            val += 1 if game_state.can_op_soldier_be_flag[s] else 0
-        return 1 - val / NUM_OF_PLAYER_SOLDIERS
+        living_sol = game_state.get_knowledge_base(op_color).get_living_soldiers()
+        for s in living_sol:
+            val += 0 if game_state.can_op_soldier_be_flag[s] else 1
+        return val
 
 
 def sum_of_heuristics_heuristic(game_state: GameState, color: Color):
@@ -113,11 +119,12 @@ def sum_of_heuristics_heuristic(game_state: GameState, color: Color):
     if is_done != 0:
         return is_done
     val = 0
-    # val += 8 * min_opp_soldiers_num_heuristic(game_state, color)
-    val += 6 * min_of_opp_soldiers_that_are_flag_options_heuristic(game_state, color)
-    val += 2 * max_my_soldier_degree_heuristic(game_state, color)
-    val += small_dist_opp_to_flag_heuristic(game_state, color)
-    # val += 8 * distance_to_opp_flag_heuristic(game_state, color)
+    val += 2 * min_opp_soldiers_num_heuristic(game_state, color)
+    # val += 6 * min_of_opp_soldiers_that_are_flag_options_heuristic(game_state, color)
+    # val += 2 * max_my_soldier_degree_heuristic(game_state, color)
+    # val += small_dist_opp_to_flag_heuristic(game_state, color)
+    val += min_of_opp_soldiers_that_are_flag_options_heuristic(game_state, color)
+    # val += 3 * distance_to_opp_flag_heuristic(game_state, color)
     return val
 
 

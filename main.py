@@ -12,6 +12,7 @@ from graphics.gui_graphic import GuiGraphic
 from agents.init_agents.init_random_agent import InitRandomAgent
 from agents.init_agents.init_human_agent import InitHumanAgent
 from agents.init_agents.init_hill_climbing_agent import InitHillClimbingAgent
+from agents.init_agents.init_heuristics import *
 
 from agents.random_agent import RandomAgent
 from agents.human_agent import HumanAgent
@@ -21,12 +22,19 @@ from agents.guessing_alpha_beta_agent import GuessingAlphaBetaAgent
 
 def main():
     graphic = StrategoGraphic(BOARD_SIZE)
-    red_agent = RandomAgent(Color.RED, graphic)
-    blue_agent = RandomAgent(Color.BLUE, graphic)
+    red_agent = GuessingAlphaBetaAgent(Color.RED, graphic, InitHillClimbingAgent(init_take_1_heuristic),
+                                       heuristic=sum_of_heuristics_heuristic,
+                                       opponent_heuristic=sum_of_heuristics_heuristic, depth=2)
+    blue_agent = GuessingAlphaBetaAgent(Color.BLUE, graphic, InitHillClimbingAgent(init_take_1_heuristic),
+                                        heuristic=sum_of_heuristics_heuristic,
+                                        opponent_heuristic=sum_of_heuristics_heuristic, depth=2,
+                                        get_legal_actions_opponent=legal_actions_from_subset_guess)
+    # red_agent = RandomAgent(Color.RED, graphic)
+    # blue_agent = RandomAgent(Color.BLUE, graphic)
     num_of_games = 10
     for i in range(num_of_games):
         # graphic = ConsoleGraphic(10, 1)
-        graphic = GuiGraphic(10, 2)
+        graphic = GuiGraphic(10, 1)
         red_agent.graphic = graphic
         blue_agent.graphic = graphic
         game = StrategoGame(red_agent, blue_agent, graphic, evaluate_weighted_num_soldiers)
