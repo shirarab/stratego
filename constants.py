@@ -12,8 +12,8 @@ class Degree(IntEnum):
     EIGHT = 8
     NINE = 9
     TEN = 10
-    BOMB = 11
-    FLAG = 12
+    FLAG = 0
+    BOMB = -1
     WATER = -2
     EMPTY = -3
 

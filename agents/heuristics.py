@@ -137,7 +137,8 @@ def better_num_soldiers_difference_heuristic(game_state: GameState, color: Color
 # ij-1        ij          ij+1
 # i+1j-1      i+1j        i+1j+1
 def get_sum_around_soldier(game_state: GameState, soldier: Soldier) -> float:
-    flagW = random.uniform(0.1, 0.5)
+    degreeW = random.uniform(0.1, 0.5)
+    flagW = random.uniform(1.51, 1.9)
     sum: float = 0
     op_color = OP_COLOR[soldier.color]
     kb = game_state.get_knowledge_base(soldier.color)
@@ -149,24 +150,21 @@ def get_sum_around_soldier(game_state: GameState, soldier: Soldier) -> float:
     for (x, y, w) in positions:
         if not (0 <= x < BOARD_SIZE and 0 <= y < BOARD_SIZE):
             continue
-        soldier = game_state.board[x][y]
-        is_op = True if soldier.color == op_color else False
+        s = game_state.board[x][y]
+        is_op = True if s.color == op_color else False
         if is_op:
-            if soldier.show_me:
-                sum -= flagW * w * soldier.degree
+            if s.show_me:
+                sum -= degreeW * w * s.degree
             else:
-                sum -= flagW * w * kb.get_highest_option_for_soldier(soldier)
+                sum -= degreeW * w * kb.get_highest_option_for_soldier(s)
         else:
-            if soldier.degree not in [Degree.EMPTY, Degree.WATER]:
-                sum += flagW * w * soldier.degree
+            if s.degree not in [Degree.EMPTY, Degree.WATER]:
+                if soldier.degree in [Degree.ONE, Degree.FLAG]:
+                    sum += flagW * w * s.degree
+                else:
+                    sum += degreeW * w * s.degree
             else:
-                sum += flagW * w * 9
-
-        # op = -1 if is_op else 1
-        # if (is_op and soldier.show_me) or (not is_op and soldier.degree != Degree.EMPTY):
-        #     sum += flagW * w * soldier.degree * op
-        # else:
-        #     sum += flagW * w * -9 * op
+                sum += degreeW * w * 9
     # print(f"shira flag sum: {sum}")
     return sum
 
@@ -197,7 +195,7 @@ def temp_name(game_state: GameState, color: Color):
                 if soldier.show_me:
                     show_me_diff += show_meW * soldier.degree
                     if i > 4:
-                        positions += positionsW * soldier.degree
+                        positions -= positionsW * soldier.degree
                     sum_around_soldiers -= get_sum_around_soldier(game_state, soldier)
 
     return show_me_diff + positions
