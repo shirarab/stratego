@@ -8,7 +8,7 @@ from agents.init_agents.init_agent import InitAgent
 from agents.init_agents.init_random_agent import InitRandomAgent
 from game_state import GameState
 from graphics.stratego_graphic import StrategoGraphic
-from constants import Color
+from constants import Color, Degree, Direction, OP_COLOR
 # from soldier import Color
 from agents.heuristics import null_heuristic
 from agents.opponent_actions import null_get_legal_actions_opponent, null_get_successor_opponent
@@ -23,13 +23,23 @@ class AlphaBetaAgent(Agent):
         self._get_legal_actions_opponent = get_legal_actions_opponent
         self._get_successor_opponent = get_successor_opponents
         self._stored_by_depth = {}
+        self.op_color = OP_COLOR[color]
 
     def get_action(self, game_state: GameState) -> Action:
         if random.randint(1, 100) >= 90:
             legal_actions = game_state.get_legal_actions(self.color)
             if len(legal_actions) == 0:
                 return None
-            return random.sample(legal_actions, 1)[0]
+            rand_action = random.sample(legal_actions, 1)[0]
+            new_legal_action = set()
+            for action in legal_actions:
+                soldier = self.find_opp_soldier_we_revealed(action, game_state)
+                if soldier is not None and \
+                        (soldier.degree == Degree.BOMB or soldier.degree > action.soldier.degree):
+                    continue
+                new_legal_action.add(action)
+            if len(new_legal_action) == 0:
+                return rand_action
         self.store_alpha_beta(game_state, self.depth + 1, self.color)
         val, action = self.alpha_beta(-float("inf"), float("inf"), game_state, self.depth, True)
         self.restore_alpha_beta(game_state, self.depth + 1, self.color)
@@ -80,3 +90,23 @@ class AlphaBetaAgent(Agent):
                 if alpha >= beta:
                     break
             return beta, min_action
+
+    def find_opp_soldier_we_revealed(self, action: Action, game_state: GameState):
+        sol_x = action.soldier.x
+        sol_y = action.soldier.y
+        op_x = sol_x
+        op_y = sol_y
+        if action.direction == Direction.UP:
+            op_x += action.num_steps
+        if action.direction == Direction.DOWN:
+            op_x -= action.num_steps
+        if action.direction == Direction.RIGHT:
+            op_y += action.num_steps
+        if action.direction == Direction.LEFT:
+            op_y -= action.num_steps
+        opponent = game_state.get_soldier_at_x_y(op_x, op_y)
+        if (opponent.color == self.op_color and action.soldier.color == self.color) or (
+                opponent.color == self.color and action.soldier.color == self.op_color):
+            return opponent
+
+        return None

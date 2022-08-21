@@ -1,4 +1,4 @@
-from constants import SOLDIER_COUNT_FOR_EACH_DEGREE, Degree, BOARD_SIZE, OP_COLOR, Direction
+from constants import SOLDIER_COUNT_FOR_EACH_DEGREE, Degree, BOARD_SIZE, OP_COLOR, Direction, OP_DISTANCE_FROM_FLAG
 from soldier import Soldier
 from agents.agent import Agent
 from action import Action
@@ -28,11 +28,21 @@ class GuessingAlphaBetaAgent(Agent):
         self.op_color = Color.RED if self.color == Color.BLUE else Color.BLUE
 
     def get_action(self, game_state: GameState) -> Action:
-        if random.randint(1, 100) >= 90:
+        if random.randint(1, 100) >= 94:
             legal_actions = game_state.get_legal_actions(self.color)
             if len(legal_actions) == 0:
                 return None
-            return random.sample(legal_actions, 1)[0]
+            rand_action = random.sample(legal_actions, 1)[0]
+            new_legal_action = set()
+            for action in legal_actions:
+                soldier = self.find_opp_soldier_we_revealed(action, game_state)
+                if soldier is not None and \
+                        (soldier.degree == Degree.BOMB or soldier.degree > action.soldier.degree):
+                    continue
+                new_legal_action.add(action)
+            if len(new_legal_action) == 0:
+                return rand_action
+            return random.sample(new_legal_action, 1)[0]
         self.store_alpha_beta(game_state, self.depth + 1, self.color)
         guessed_game_state = self.guessing_opponent_soldiers(game_state)
         val, action = self.alpha_beta(-float("inf"), float("inf"), guessed_game_state, self.depth, True)
@@ -75,11 +85,16 @@ class GuessingAlphaBetaAgent(Agent):
                                          game_state.get_knowledge_base(op_color).option_count_for_soldier(
                                              soldier_info)])
                 if soldier_info.color == self.color:
-                    board[i][j] = Soldier(soldier_info.degree, i, j, self.color)
+                    board[i][j] = Soldier(soldier_info.degree, soldier_info.x, soldier_info.y, self.color)
                     my_options = my_knowledge_base.get_options_for_soldier(soldier_info)
                     can_op_soldier_be_flag[board[i][j]] = True if Degree.FLAG in my_options else False
 
         # random.shuffle(opp_soldiers)
+        my_soldiers = game_state.get_knowledge_base(self.color).get_living_soldiers()
+        flag = None
+        for s in my_soldiers:
+            if s.degree == Degree.FLAG:
+                flag = s
         opp_soldiers.sort(key=lambda x: x[1])
         opp_knowledge_base = game_state.get_knowledge_base(op_color)
         options = [opp_knowledge_base.get_options_for_soldier(opp_soldiers[index][0]) for index in
@@ -87,7 +102,7 @@ class GuessingAlphaBetaAgent(Agent):
         for i in range(len(options)):
             random.shuffle(options[i])
         degree_opp = self.find_degree_for_opp_soldiers(game_state, opp_soldiers, [], num_soldiers_opponent_on_board, 0,
-                                                       op_color, options)
+                                                       op_color, options, flag)
 
         for i in range(len(opp_soldiers)):
             soldier = opp_soldiers[i][0]
@@ -99,20 +114,23 @@ class GuessingAlphaBetaAgent(Agent):
         return GameState(board, game_state.score, game_state.done, dead, None, can_op_soldier_be_flag)
 
     def find_degree_for_opp_soldiers(self, game_state, opp_soldiers, degree, num_soldiers_opponent_on_board, index,
-                                     op_color, options):
+                                     op_color, options, flag):
         if index == len(opp_soldiers):
             return degree
         # options = game_state._soldier_knowledge_base[op_color][opp_soldiers[index][0]].copy()
         # options = opp_knowledge_base.get_options_for_soldier(opp_soldiers[index][0])
 
         # random.shuffle(options)
+        soldier = opp_soldiers[index][0]
+        if abs(soldier.x - flag.x) + abs(soldier.y - flag.y) < OP_DISTANCE_FROM_FLAG:
+            options[index].sort()
         for i in options[index]:
             if num_soldiers_opponent_on_board[i] > 0:
                 degree.append(i)
                 num_soldiers_opponent_on_board[i] -= 1
                 return_val = self.find_degree_for_opp_soldiers(game_state, opp_soldiers, degree,
                                                                num_soldiers_opponent_on_board, index + 1, op_color,
-                                                               options)
+                                                               options, flag)
                 if return_val is not None:
                     degree = return_val
                     return degree

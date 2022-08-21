@@ -31,16 +31,20 @@ def weighted_num_soldiers_evaluator(game_state: GameState, color: Color, get_wei
                 sum += pieceW
                 if soldier.show_me:
                     sum -= rankW * soldier.degree
-                if i < 6:
-                    sum -= distW * (6 - i) ** 2
+                if i < 5 and color == Color.RED:
+                    sum -= distW * (5 - i) ** 2
+                elif i > 3 and color == Color.BLUE:
+                    sum -= distW * (i - 3) ** 2
                 if kb.has_soldier_moved(soldier):
                     sum -= moveW
             elif soldier.color == op_color:
                 sum -= pieceW
                 if soldier.show_me:
                     sum += rankW * soldier.degree
-                if i > 3:
+                if i > 3 and color == Color.BLUE:
                     sum += distW * (i - 3) ** 2
+                elif i < 5 and color == Color.RED:
+                    sum += distW * (5 - i) ** 2
                 if op_kb.has_soldier_moved(soldier):
                     sum += moveW
     return sum

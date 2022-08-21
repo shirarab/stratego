@@ -89,8 +89,8 @@ def init_take_1_heuristic(board: List[List[Soldier]]):
     return val
 
 
-# def init_flag_in_first_row_heuristic(board: List[List[Soldier]]):
-#     for j in range(10):
-#         if board[3][j].degree == Degree.FLAG:
-#             return 10
-#     return 0
+def init_flag_in_second_row_heuristic(board: List[List[Soldier]]):
+    for j in range(10):
+        if board[2][j].degree == Degree.FLAG:
+            return 10
+    return 0
