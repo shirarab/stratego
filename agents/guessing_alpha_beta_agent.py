@@ -28,7 +28,7 @@ class GuessingAlphaBetaAgent(Agent):
         self.op_color = Color.RED if self.color == Color.BLUE else Color.BLUE
 
     def get_action(self, game_state: GameState) -> Action:
-        if random.randint(1, 100) >= 95:
+        if random.randint(1, 100) >= 90:
             legal_actions = game_state.get_legal_actions(self.color)
             return random.sample(legal_actions, 1)[0]
         self.store_alpha_beta(game_state, self.depth + 1, self.color)
