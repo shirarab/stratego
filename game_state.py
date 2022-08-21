@@ -200,7 +200,7 @@ class GameState(object):
             self.shot_and_dead(opponent, action.soldier, keep_record_in_kb)
             action.soldier.set_position(op_x, op_y)
         elif opponent.degree == action.soldier.degree:
-            instead_opponent = Soldier(Degree.EMPTY, sol_x, sol_y, Color.GRAY)
+            instead_opponent = Soldier(Degree.EMPTY, op_x, op_y, Color.GRAY)
             self.shot_and_dead(action.soldier, opponent, keep_record_in_kb)
             self.shot_and_dead(opponent, action.soldier, keep_record_in_kb)
         self._board[sol_x][sol_y] = instead_me

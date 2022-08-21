@@ -199,8 +199,8 @@ class GuiGraphic(StrategoGraphic):
         elif self._second_soldier is None:
             self._second_soldier = self.board[row][col]
             self._second_clicked.set(True)
-        # else:
-        #     self.reset_first_second_soldier_click()
+        else:
+            self.reset_first_second_soldier_click()
 
     def _update_board(self):
         for i in range(self.board_size):

@@ -215,12 +215,8 @@ def protect_flag_and_attack_heuristic(game_state: GameState, color: Color):
     op_close_to_my_flag = -10 if opp_distance_to_flag_heuristic(game_state, color) < OP_DISTANCE_FROM_FLAG else 0
     most_far_soldier = my_most_far_soldier(game_state, color)
     res = protect_my_flag + 5 * op_close_to_my_flag + most_far_soldier
-    # if op_close_to_my_flag == 0:
-    #     print("op flag 0")
-    # if op_close_to_my_flag == -10:
-    #     return -1000
-    #     # print("protect_my_flag", protect_my_flag)
-    #     # print("most_far_soldier", most_far_soldier)
+    if game_state.dead[color][Degree.FLAG] > 0:
+        return -10000
     return res
 
 # try not to reveal 10
