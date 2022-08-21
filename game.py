@@ -75,6 +75,6 @@ class StrategoGame(object):
             else:
                 self._state.apply_action(blue_action)
                 self._graphic.show_board(self._state)
-            self._state.score = self._evaluate_score(self._state, Color.RED)
+            self._state.score = self._evaluate_score(self._state, Color.RED, self._red_agent, self._blue_agent)
         self._graphic.game_over(self._state.winner, self._state.score)
         return self._state.score, self._turn_count

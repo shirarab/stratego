@@ -53,7 +53,6 @@ UNMOVABLE = {
     Degree.FLAG
 }
 
-
 SOLDIER_COUNT_FOR_EACH_DEGREE = {
     Degree.BOMB: 6,
     Degree.ONE: 1,
@@ -84,3 +83,35 @@ PLAYER_SOLDIER_DEGREES_LIST = [d for d in SOLDIER_COUNT_FOR_EACH_DEGREE]
 NUM_OF_PLAYER_SOLDIERS = 40
 
 OP_DISTANCE_FROM_FLAG = 5
+
+JEROEN_METS_VALUES_TABLE = {
+    # degree: (moved, discovered, captured)
+    Degree.BOMB: (0, 100, 750),
+    Degree.ONE: (100, 0, 100),  # Spy
+    Degree.TWO: (100, 0, 2),  # Scout
+    Degree.THREE: (100, 20, 50),  # Miner
+    Degree.FOUR: (100, 5, 5),  # Sergeant
+    Degree.FIVE: (100, 10, 10),  # Lieutenant
+    Degree.SIX: (100, 15, 20),  # Captain
+    Degree.SEVEN: (100, 20, 50),  # Major
+    Degree.EIGHT: (100, 25, 100),  # Colonel
+    Degree.NINE: (100, 50, 250),  # General
+    Degree.TEN: (100, 100, 500),  # Marshal
+    Degree.FLAG: (0, 0, 1000)
+}
+
+NUVC_VALUES_TABLE = {
+    # degree: (moved, discovered, captured)
+    Degree.BOMB: 10,
+    Degree.ONE: (10, 1),  # Spy
+    Degree.TWO: 1,  # Scout
+    Degree.THREE: (6, 3),  # Miner
+    Degree.FOUR: 4,  # Sergeant
+    Degree.FIVE: 5,  # Lieutenant
+    Degree.SIX: 12,  # Captain
+    Degree.SEVEN: 14,  # Major
+    Degree.EIGHT: 16,  # Colonel
+    Degree.NINE: 18,  # General
+    Degree.TEN: (20, 40),  # Marshal
+    Degree.FLAG: 0
+}

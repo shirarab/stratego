@@ -176,33 +176,39 @@ class GameState(object):
         if opponent.degree == Degree.EMPTY:
             instead_opponent = action.soldier
             action.soldier.set_position(op_x, op_y)
+            action.soldier.set_has_moved()
         elif opponent.degree == Degree.BOMB:
             if action.soldier.degree == Degree.THREE:
                 instead_opponent = action.soldier
                 self.shot_and_dead(opponent, action.soldier, keep_record_in_kb)
                 action.soldier.set_position(op_x, op_y)
+                action.soldier.set_has_moved()
             else:
                 self.shot_and_dead(action.soldier, opponent, keep_record_in_kb)
         elif opponent.degree == Degree.FLAG:
             instead_opponent = action.soldier
             self.shot_and_dead(opponent, action.soldier, keep_record_in_kb)
             action.soldier.set_position(op_x, op_y)
+            action.soldier.set_has_moved()
             self._done = True
             self._winner = action.soldier.color
         elif opponent.degree == Degree.TEN and action.soldier.degree == Degree.ONE:
             instead_opponent = action.soldier
             self.shot_and_dead(opponent, action.soldier, keep_record_in_kb)
             action.soldier.set_position(op_x, op_y)
+            action.soldier.set_has_moved()
         elif opponent.degree > action.soldier.degree:
             self.shot_and_dead(action.soldier, opponent, keep_record_in_kb)
         elif opponent.degree < action.soldier.degree:
             instead_opponent = action.soldier
             self.shot_and_dead(opponent, action.soldier, keep_record_in_kb)
             action.soldier.set_position(op_x, op_y)
+            action.soldier.set_has_moved()
         elif opponent.degree == action.soldier.degree:
             instead_opponent = Soldier(Degree.EMPTY, op_x, op_y, Color.GRAY)
             self.shot_and_dead(action.soldier, opponent, keep_record_in_kb)
             self.shot_and_dead(opponent, action.soldier, keep_record_in_kb)
+            action.soldier.set_has_moved()
         self._board[sol_x][sol_y] = instead_me
         self._board[op_x][op_y] = instead_opponent
 
