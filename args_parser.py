@@ -27,13 +27,8 @@ AGENTS = {'RandomAgent': RandomAgent,
 PLAYER_COLORS = {Color.RED: 'red', Color.BLUE: 'blue'}
 
 DEFAULT_DISPLAY = 'GuiGraphic'
-DEFAULT_INIT_AGENT = 'InitRandomAgent'
 DEFAULT_AGENT = 'RandomAgent'
 DEFAULT_EVALUATION_FUNCTION = 'evaluate_weighted_num_soldiers'
-
-
-# todo
-#  heuristics
 
 
 class ArgsParser(object):
@@ -60,10 +55,10 @@ class ArgsParser(object):
         # init agents and agents
         self._parser.add_argument('-ria', '--red_init_agent', dest='red_init_agent',
                                   choices=INIT_AGENTS.keys(), help='The red init agent.',
-                                  default=DEFAULT_INIT_AGENT, type=str)
+                                  default=None, type=str)
         self._parser.add_argument('-bia', '--blue_init_agent', dest='blue_init_agent',
                                   choices=INIT_AGENTS.keys(), help='The blue init agent.',
-                                  default=DEFAULT_INIT_AGENT, type=str)
+                                  default=None, type=str)
         self._parser.add_argument('-ra', '--red_agent', dest='red_agent',
                                   choices=AGENTS.keys(), help='The red agent.',
                                   default=DEFAULT_AGENT, type=str)
@@ -137,6 +132,8 @@ class ArgsParser(object):
         if color not in PLAYER_COLORS.keys():
             raise Exception('Invalid color given.')
         init_agent_name = getattr(self._args, PLAYER_COLORS[color] + '_init_agent')
+        if init_agent_name is None:
+            return None
         if init_agent_name not in INIT_AGENTS.keys():
             raise Exception('Invalid init agent chosen.')
         init_heuristic = self.get_init_heuristic(color)
