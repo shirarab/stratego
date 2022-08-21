@@ -186,6 +186,12 @@ class GuiGraphic(StrategoGraphic):
 
         return btn_style, text
 
+    def reset_first_second_soldier_click(self):
+        self._first_soldier = None
+        self._first_clicked.set(False)
+        self._second_soldier = None
+        self._second_clicked.set(False)
+
     def _click_btn_soldier_selected_pos(self, row, col):
         if self._first_soldier is None:
             self._first_soldier = self.board[row][col]
@@ -193,6 +199,8 @@ class GuiGraphic(StrategoGraphic):
         elif self._second_soldier is None:
             self._second_soldier = self.board[row][col]
             self._second_clicked.set(True)
+        # else:
+        #     self.reset_first_second_soldier_click()
 
     def _update_board(self):
         for i in range(self.board_size):
@@ -257,13 +265,10 @@ class GuiGraphic(StrategoGraphic):
             degree, i, j = self._side_soldier
         # if i >= 0 and j >= 0:
         #     board[i][j] = False
-        self._first_soldier = None
-        self._second_soldier = None
-        self._side_soldier = None
         # # do not delete
         # print("side:", x, y)
-        self._first_clicked.set(False)
-        self._second_clicked.set(False)
+        self.reset_first_second_soldier_click()
+        self._side_soldier = None
         self._side_clicked.set(False)
 
         soldier = None
@@ -294,17 +299,20 @@ class GuiGraphic(StrategoGraphic):
 
     def ask_for_action(self, game_state: GameState) -> Tuple[int, int, Direction, int]:
         # x, y, direction, num_steps
+        self.reset_first_second_soldier_click()
+        # print("ask_for_action", self._first_soldier, self._second_soldier)
         x, y, direction, num_steps = 0, 0, None, 0
         x_sec, y_sec = 0, 0
         self._root.waitvar(self._first_clicked)
         self._root.waitvar(self._second_clicked)
+        # print("ask_for_action after clicked", self._first_soldier, self._second_soldier)
         if self._first_soldier is not None and self._second_soldier is not None:
             x, y = self._first_soldier.x, self._first_soldier.y
             x_sec, y_sec = self._second_soldier.x, self._second_soldier.y
         direction, num_steps = self._get_click_direction(x, y, x_sec, y_sec)
-        # do not delete
-        # print("x_sec", x_sec, "y_sec", y_sec)
+        # # do not delete
         # print("chosen: x", x, "y", y, "dir", direction, "num steps", num_steps)
+        # print("x_sec", x_sec, "y_sec", y_sec)
         self._first_soldier = None
         self._second_soldier = None
         self._first_clicked.set(False)
