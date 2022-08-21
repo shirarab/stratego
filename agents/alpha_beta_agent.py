@@ -27,6 +27,8 @@ class AlphaBetaAgent(Agent):
     def get_action(self, game_state: GameState) -> Action:
         if random.randint(1, 100) >= 90:
             legal_actions = game_state.get_legal_actions(self.color)
+            if len(legal_actions) == 0:
+                return None
             return random.sample(legal_actions, 1)[0]
         self.store_alpha_beta(game_state, self.depth + 1, self.color)
         val, action = self.alpha_beta(-float("inf"), float("inf"), game_state, self.depth, True)

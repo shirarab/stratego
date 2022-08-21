@@ -5,7 +5,7 @@ from agents.heuristics import *
 from agents.opponent_actions import *
 from graphics.stratego_graphic import StrategoGraphic
 
-from evaluate_score import evaluate_num_soldiers
+from evaluate_score import num_soldiers_evaluator
 from graphics.console_graphic import ConsoleGraphic
 from graphics.gui_graphic import GuiGraphic
 
@@ -29,7 +29,7 @@ def main():
         graphic = GuiGraphic(10, 2)
         red_agent.graphic = graphic
         blue_agent.graphic = graphic
-        game = StrategoGame(red_agent, blue_agent, graphic, evaluate_weighted_num_soldiers)
+        game = StrategoGame(red_agent, blue_agent, graphic, weighted_num_soldiers_evaluator)
         s_time = time.time()
         score, turn_count = game.run()
         e_time = time.time()

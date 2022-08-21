@@ -41,6 +41,10 @@ class GameState(object):
     def done(self):
         return self._done
 
+    @done.setter
+    def done(self, value):
+        self._done = value
+
     @property
     def score(self):
         return self._score
@@ -60,6 +64,10 @@ class GameState(object):
     @property
     def winner(self):
         return self._winner
+
+    @winner.setter
+    def winner(self, value):
+        self._winner = value
 
     def get_soldier_at_x_y(self, x, y) -> Soldier:
         if 0 <= x < BOARD_SIZE and 0 <= y < BOARD_SIZE:

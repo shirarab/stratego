@@ -59,14 +59,22 @@ class StrategoGame(object):
         while not self._state.done:
             self._turn_count += 1
             red_action = self._red_agent.get_action(self._state)
-            self._state.apply_action(red_action)
-            self._graphic.show_board(self._state)
+            if red_action is None:
+                self._state.winner = Color.BLUE
+                self._state.done = True
+            else:
+                self._state.apply_action(red_action)
+                self._graphic.show_board(self._state)
             if self._state.done:
                 break
             self._turn_count += 1
             blue_action = self._blue_agent.get_action(self._state)
-            self._state.apply_action(blue_action)
-            self._graphic.show_board(self._state)
+            if blue_action is None:
+                self._state.winner = Color.RED
+                self._state.done = True
+            else:
+                self._state.apply_action(blue_action)
+                self._graphic.show_board(self._state)
             self._state.score = self._evaluate_score(self._state, Color.RED)
         self._graphic.game_over(self._state.winner, self._state.score)
         return self._state.score, self._turn_count

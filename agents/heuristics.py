@@ -1,7 +1,7 @@
 import math
 import random
 
-from evaluate_score import evaluate_weighted_num_soldiers
+from evaluate_score import weighted_num_soldiers_evaluator, naive_unit_count_evaluator
 from game_state import GameState
 from constants import Color, Degree, NUM_OF_PLAYER_SOLDIERS, BOARD_SIZE, SOLDIER_COUNT_FOR_EACH_DEGREE, OP_COLOR
 from scipy import spatial
@@ -130,7 +130,7 @@ def get_random_weights():
 
 
 def better_num_soldiers_difference_heuristic(game_state: GameState, color: Color):
-    return evaluate_weighted_num_soldiers(game_state, color, get_random_weights)
+    return weighted_num_soldiers_evaluator(game_state, color, get_random_weights)
 
 
 # i-1j-1      i-1j        i-1j+1
@@ -202,7 +202,11 @@ def temp_name(game_state: GameState, color: Color):
 
 
 def interesting_heuristic(game_state: GameState, color: Color):
-    return 1.7 * temp_name(game_state, color) + 0.15*sum_of_heuristics_heuristic(game_state, color)
+    return 1.7 * temp_name(game_state, color) + 0.15 * sum_of_heuristics_heuristic(game_state, color)
+
+
+def naive_unit_count_heuristic(game_state: GameState, color: Color):
+    return naive_unit_count_evaluator(game_state, color)
 
 # try not to reveal 10
 # once 10 revealed- it should attack only identified pieces.
