@@ -143,6 +143,12 @@ class KnowledgeBase(object):
     
     def get_options_for_soldier(self, soldier: Soldier):
         return self._soldier_knowledge_base[soldier].copy()
+
+    def get_highest_option_for_soldier(self, soldier: Soldier):
+        for s in self._soldier_knowledge_base:
+            if s.position == soldier.position:
+                return max(self._soldier_knowledge_base[s])
+        return 0
     
     def store_kb(self):
         store_soldier_kb, store_degree_kb = dict(), dict()

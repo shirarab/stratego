@@ -179,7 +179,8 @@ class GuiGraphic(StrategoGraphic):
             text = ""
         if soldier.color == Color.BLUE and self.num_players_to_show == 1 and not soldier.show_me:
             text = ""
-
+        if soldier.color == Color.RED and self.num_players_to_show > 0 and soldier.show_me:
+            text += "*"
         return btn_style, text
 
     def _click_btn_soldier_selected_pos(self, row, col):

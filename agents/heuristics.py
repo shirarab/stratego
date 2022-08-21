@@ -6,6 +6,8 @@ from game_state import GameState
 from constants import Color, Degree, NUM_OF_PLAYER_SOLDIERS, BOARD_SIZE, SOLDIER_COUNT_FOR_EACH_DEGREE, OP_COLOR
 from scipy import spatial
 
+from soldier import Soldier
+
 SUM_DEGREES_OF_PLAYER_FOR_HEURISTIC = sum(
     [SOLDIER_COUNT_FOR_EACH_DEGREE[deg] * deg for deg in Degree if
      deg not in [Degree.BOMB, Degree.THREE, Degree.WATER, Degree.EMPTY]] + [
@@ -134,24 +136,75 @@ def better_num_soldiers_difference_heuristic(game_state: GameState, color: Color
 # i-1j-1      i-1j        i-1j+1
 # ij-1        ij          ij+1
 # i+1j-1      i+1j        i+1j+1
-def get_sum_around_soldier(game_state: GameState, i: int, j: int, color: Color) -> float:
+def get_sum_around_soldier(game_state: GameState, soldier: Soldier) -> float:
     flagW = random.uniform(0.1, 0.5)
     sum: float = 0
-    op_color = Color.BLUE if color == Color.RED else Color.RED
+    op_color = OP_COLOR[soldier.color]
+    kb = game_state.get_knowledge_base(soldier.color)
+    i, j = soldier.position
     positions = [(i - 1, j - 1, 1), (i - 1, j, 20), (i - 1, j + 1, 1),
                  (i, j - 1, 20), (i, j + 1, 20),
                  (i + 1, j - 1, 1), (i + 1, j, 20), (i + 1, j + 1, 1)]
+
     for (x, y, w) in positions:
         if not (0 <= x < BOARD_SIZE and 0 <= y < BOARD_SIZE):
             continue
         soldier = game_state.board[x][y]
-        op = -1 if soldier.color == op_color else 1
-        if soldier.degree != Degree.EMPTY:
-            sum += flagW * w * soldier.degree * op
+        is_op = True if soldier.color == op_color else False
+        if is_op:
+            if soldier.show_me:
+                sum -= flagW * w * soldier.degree
+            else:
+                sum -= flagW * w * kb.get_highest_option_for_soldier(soldier)
         else:
-            sum += flagW * w * -9 * op
+            if soldier.degree not in [Degree.EMPTY, Degree.WATER]:
+                sum += flagW * w * soldier.degree
+            else:
+                sum += flagW * w * 9
+
+        # op = -1 if is_op else 1
+        # if (is_op and soldier.show_me) or (not is_op and soldier.degree != Degree.EMPTY):
+        #     sum += flagW * w * soldier.degree * op
+        # else:
+        #     sum += flagW * w * -9 * op
     # print(f"shira flag sum: {sum}")
     return sum
+
+
+def temp_name(game_state: GameState, color: Color):
+    show_meW = random.uniform(0.7, 1.1)
+    positionsW = random.uniform(0.05, 0.16)
+
+    op_color = OP_COLOR[color]
+    show_me_diff = 0
+    positions = 0
+    sum_around_soldiers = 0
+
+    for i in range(BOARD_SIZE):
+        for j in range(BOARD_SIZE):
+            soldier = game_state.board[i][j]
+            if soldier.color == color:
+                if i < 6:
+                    positions += positionsW
+                if soldier.show_me:
+                    show_me_diff -= show_meW * soldier.degree
+                    if i < 6:
+                        positions -= positionsW * soldier.degree
+                sum_around_soldiers += get_sum_around_soldier(game_state, soldier)
+            elif soldier.color == op_color:
+                if i > 4:
+                    positions -= positionsW
+                if soldier.show_me:
+                    show_me_diff += show_meW * soldier.degree
+                    if i > 4:
+                        positions += positionsW * soldier.degree
+                    sum_around_soldiers -= get_sum_around_soldier(game_state, soldier)
+
+    return show_me_diff + positions
+
+
+def interesting_heuristic(game_state: GameState, color: Color):
+    return 1.7 * temp_name(game_state, color) + 0.15*sum_of_heuristics_heuristic(game_state, color)
 
 # try not to reveal 10
 # once 10 revealed- it should attack only identified pieces.

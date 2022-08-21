@@ -208,9 +208,9 @@ class ArgsParser(object):
 
 def lookup(name, namespace):
     """
-  Get a method or class from any imported module from its name.
-  Usage: lookup(functionName, globals())
-  """
+    Get a method or class from any imported module from its name.
+    Usage: lookup(functionName, globals())
+    """
     dots = name.count('.')
     if dots > 0:
         module_name, obj_name = '.'.join(name.split('.')[:-1]), name.split('.')[-1]

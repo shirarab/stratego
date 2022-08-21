@@ -34,8 +34,9 @@ class GuessingAlphaBetaAgent(Agent):
         self.store_alpha_beta(game_state, self.depth + 1, self.color)
         guessed_game_state = self.guessing_opponent_soldiers(game_state)
         val, action = self.alpha_beta(-float("inf"), float("inf"), guessed_game_state, self.depth, True)
-        action = Action(game_state.get_soldier_at_x_y(action.soldier.x, action.soldier.y), action.direction,
-                        action.num_steps)
+        if action is not None:
+            action = Action(game_state.get_soldier_at_x_y(action.soldier.x, action.soldier.y), action.direction,
+                            action.num_steps)
         self.restore_alpha_beta(game_state, self.depth + 1, self.color)
         return action
 
@@ -79,7 +80,8 @@ class GuessingAlphaBetaAgent(Agent):
         # random.shuffle(opp_soldiers)
         opp_soldiers.sort(key=lambda x: x[1])
         opp_knowledge_base = game_state.get_knowledge_base(op_color)
-        options = [opp_knowledge_base.get_options_for_soldier(opp_soldiers[index][0]) for index in range(len(opp_soldiers))]
+        options = [opp_knowledge_base.get_options_for_soldier(opp_soldiers[index][0]) for index in
+                   range(len(opp_soldiers))]
         for i in range(len(options)):
             random.shuffle(options[i])
         degree_opp = self.find_degree_for_opp_soldiers(game_state, opp_soldiers, [], num_soldiers_opponent_on_board, 0,
@@ -107,7 +109,8 @@ class GuessingAlphaBetaAgent(Agent):
                 degree.append(i)
                 num_soldiers_opponent_on_board[i] -= 1
                 return_val = self.find_degree_for_opp_soldiers(game_state, opp_soldiers, degree,
-                                                               num_soldiers_opponent_on_board, index + 1, op_color, options)
+                                                               num_soldiers_opponent_on_board, index + 1, op_color,
+                                                               options)
                 if return_val is not None:
                     degree = return_val
                     return degree
