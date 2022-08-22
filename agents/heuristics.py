@@ -170,7 +170,7 @@ def get_random_weights():
 
 # heuristic for alpha-beta
 def better_num_soldiers_difference_heuristic(game_state: GameState, color: Color):
-    return weighted_num_soldiers_evaluator(game_state, color, get_random_weights)
+    return weighted_num_soldiers_evaluator(game_state, color, get_weights=get_random_weights)
 
 
 def my_most_far_soldier(game_state: GameState, color: Color):
