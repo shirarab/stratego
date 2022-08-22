@@ -28,7 +28,7 @@ PLAYER_COLORS = {Color.RED: 'red', Color.BLUE: 'blue'}
 
 DEFAULT_DISPLAY = 'GuiGraphic'
 DEFAULT_AGENT = 'RandomAgent'
-DEFAULT_EVALUATION_FUNCTION = 'evaluate_weighted_num_soldiers'
+DEFAULT_EVALUATION_FUNCTION = 'num_soldiers_evaluator'
 
 
 class ArgsParser(object):
