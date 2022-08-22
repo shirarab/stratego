@@ -27,6 +27,7 @@ class KnowledgeBase(object):
         self._color = color
         self._soldier_knowledge_base = dict()  # KB with soldier as keys, degrees as values
         self._degree_knowledge_base = {deg: [] for deg in SOLDIER_COUNT_FOR_EACH_DEGREE}
+        self._moved_soldiers = set()
         self._singletons = Counter()
         self._do_update = False
         self._degrees_to_update = set()
@@ -117,6 +118,7 @@ class KnowledgeBase(object):
         """
         If a soldier has moved, record that it can't be bomb or flag
         """
+        self._moved_soldiers.add(soldier)
         for unmovable_degree in UNMOVABLE:
             if unmovable_degree in self._soldier_knowledge_base[soldier]:
                 self._degrees_to_update.add(unmovable_degree)
@@ -130,16 +132,28 @@ class KnowledgeBase(object):
         if len(self._soldier_knowledge_base[soldier]) == 0:
             raise KnowledgeBaseContradiction(f"No options left for soldier {soldier}")
     
+    def get_moved_soldiers(self):
+        return set(self._moved_soldiers)
+
+    def has_soldier_moved(self, soldier: Soldier):
+        return soldier in self._moved_soldiers
+    
     def option_count_for_soldier(self, soldier: Soldier):
         return len(self._soldier_knowledge_base[soldier])
     
     def get_options_for_soldier(self, soldier: Soldier):
         return self._soldier_knowledge_base[soldier].copy()
+
+    def get_highest_option_for_soldier(self, soldier: Soldier):
+        for s in self._soldier_knowledge_base:
+            if s.position == soldier.position:
+                return max(self._soldier_knowledge_base[s])
+        return 0
     
     def store_kb(self):
         store_soldier_kb, store_degree_kb = dict(), dict()
         for sol in self._soldier_knowledge_base:
-            store_soldier_kb[sol] = deepcopy(self._soldier_knowledge_base[sol])
+            store_soldier_kb[sol] = copy(self._soldier_knowledge_base[sol])
         for deg in self._degree_knowledge_base:
             store_degree_kb[deg] = copy(self._degree_knowledge_base[deg])
         data = self._color, store_soldier_kb, store_degree_kb, \
@@ -152,7 +166,10 @@ class KnowledgeBase(object):
     
     def get_living_soldiers(self):
         return list(self._soldier_knowledge_base.keys())
-    
+
+    def get_living_soldiers_count(self):
+        return len(self._soldier_knowledge_base)
+
     def is_assignment_consistent(self, assignment: Dict[Soldier, Degree], game_state) -> bool:
         """
         Receives a partial assignment to soldiers, returns whether it is consistent with the current knowledge base

@@ -12,7 +12,11 @@ def null_get_legal_actions_opponent(game_state: GameState, color: Color) -> Set[
 
 
 def legal_actions_from_subset_guess(game_state: GameState, color: Color) -> Set[Action]:
-    # store_game_state = game_state.store()
+    """
+    Guess an assignment for the movable soldiers, make sure that it's consistent with the KB, and return set of
+    actions based on that assignment.
+    """
+    game_state.get_knowledge_base(color).update(game_state)
     movable_soldiers = game_state.get_unblocked_soldiers(color)
     found_assignment = False
     assignment = dict()

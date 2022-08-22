@@ -7,6 +7,7 @@ class Soldier(object):
         self._color = color
         self._is_alive = True
         self._show_me = False
+        self._has_moved = False
 
     @property
     def degree(self):
@@ -36,6 +37,10 @@ class Soldier(object):
     def show_me(self):
         return self._show_me
 
+    @property
+    def has_moved(self):
+        return self._has_moved
+
     def set_position(self, position_x, position_y):
         self._position_x = position_x
         self._position_y = position_y
@@ -51,6 +56,9 @@ class Soldier(object):
 
     def set_show_me(self):
         self._show_me = True
+
+    def set_has_moved(self):
+        self._has_moved = True
 
     def store(self):
         return self._position_x, self._position_y, self._is_alive, self._show_me

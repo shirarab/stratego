@@ -1,6 +1,4 @@
-# import itertools
-# from copy import deepcopy
-from constants import SOLDIER_COUNT_FOR_EACH_DEGREE, Degree, BOARD_SIZE, OP_COLOR
+from constants import SOLDIER_COUNT_FOR_EACH_DEGREE, Degree, BOARD_SIZE, OP_COLOR, Direction, OP_DISTANCE_FROM_FLAG
 from soldier import Soldier
 from agents.agent import Agent
 from action import Action
@@ -30,14 +28,27 @@ class GuessingAlphaBetaAgent(Agent):
         self.op_color = Color.RED if self.color == Color.BLUE else Color.BLUE
 
     def get_action(self, game_state: GameState) -> Action:
-        if random.randint(1, 100) >= 95:
+        if random.randint(1, 100) >= 94:
             legal_actions = game_state.get_legal_actions(self.color)
-            return random.sample(legal_actions, 1)[0]
+            if len(legal_actions) == 0:
+                return None
+            rand_action = random.sample(legal_actions, 1)[0]
+            new_legal_action = set()
+            for action in legal_actions:
+                soldier = self.find_opp_soldier_we_revealed(action, game_state)
+                if soldier is not None and \
+                        (soldier.degree == Degree.BOMB or soldier.degree > action.soldier.degree):
+                    continue
+                new_legal_action.add(action)
+            if len(new_legal_action) == 0:
+                return rand_action
+            return random.sample(new_legal_action, 1)[0]
         self.store_alpha_beta(game_state, self.depth + 1, self.color)
         guessed_game_state = self.guessing_opponent_soldiers(game_state)
         val, action = self.alpha_beta(-float("inf"), float("inf"), guessed_game_state, self.depth, True)
-        action = Action(game_state.get_soldier_at_x_y(action.soldier.x, action.soldier.y), action.direction,
-                        action.num_steps)
+        if action is not None:
+            action = Action(game_state.get_soldier_at_x_y(action.soldier.x, action.soldier.y), action.direction,
+                            action.num_steps)
         self.restore_alpha_beta(game_state, self.depth + 1, self.color)
         return action
 
@@ -74,18 +85,24 @@ class GuessingAlphaBetaAgent(Agent):
                                          game_state.get_knowledge_base(op_color).option_count_for_soldier(
                                              soldier_info)])
                 if soldier_info.color == self.color:
-                    board[i][j] = Soldier(soldier_info.degree, i, j, self.color)
+                    board[i][j] = Soldier(soldier_info.degree, soldier_info.x, soldier_info.y, self.color)
                     my_options = my_knowledge_base.get_options_for_soldier(soldier_info)
                     can_op_soldier_be_flag[board[i][j]] = True if Degree.FLAG in my_options else False
 
         # random.shuffle(opp_soldiers)
+        my_soldiers = game_state.get_knowledge_base(self.color).get_living_soldiers()
+        flag = None
+        for s in my_soldiers:
+            if s.degree == Degree.FLAG:
+                flag = s
         opp_soldiers.sort(key=lambda x: x[1])
         opp_knowledge_base = game_state.get_knowledge_base(op_color)
-        options = [opp_knowledge_base.get_options_for_soldier(opp_soldiers[index][0]) for index in range(len(opp_soldiers))]
+        options = [opp_knowledge_base.get_options_for_soldier(opp_soldiers[index][0]) for index in
+                   range(len(opp_soldiers))]
         for i in range(len(options)):
             random.shuffle(options[i])
         degree_opp = self.find_degree_for_opp_soldiers(game_state, opp_soldiers, [], num_soldiers_opponent_on_board, 0,
-                                                       op_color, options)
+                                                       op_color, options, flag)
 
         for i in range(len(opp_soldiers)):
             soldier = opp_soldiers[i][0]
@@ -97,24 +114,48 @@ class GuessingAlphaBetaAgent(Agent):
         return GameState(board, game_state.score, game_state.done, dead, None, can_op_soldier_be_flag)
 
     def find_degree_for_opp_soldiers(self, game_state, opp_soldiers, degree, num_soldiers_opponent_on_board, index,
-                                     op_color, options):
+                                     op_color, options, flag):
         if index == len(opp_soldiers):
             return degree
         # options = game_state._soldier_knowledge_base[op_color][opp_soldiers[index][0]].copy()
         # options = opp_knowledge_base.get_options_for_soldier(opp_soldiers[index][0])
 
         # random.shuffle(options)
+        soldier = opp_soldiers[index][0]
+        if abs(soldier.x - flag.x) + abs(soldier.y - flag.y) < OP_DISTANCE_FROM_FLAG:
+            options[index].sort()
         for i in options[index]:
             if num_soldiers_opponent_on_board[i] > 0:
                 degree.append(i)
                 num_soldiers_opponent_on_board[i] -= 1
                 return_val = self.find_degree_for_opp_soldiers(game_state, opp_soldiers, degree,
-                                                               num_soldiers_opponent_on_board, index + 1, op_color, options)
+                                                               num_soldiers_opponent_on_board, index + 1, op_color,
+                                                               options, flag)
                 if return_val is not None:
                     degree = return_val
                     return degree
                 degree.pop(index)
                 num_soldiers_opponent_on_board[i] += 1
+
+        return None
+
+    def find_opp_soldier_we_revealed(self, action: Action, game_state: GameState):
+        sol_x = action.soldier.x
+        sol_y = action.soldier.y
+        op_x = sol_x
+        op_y = sol_y
+        if action.direction == Direction.UP:
+            op_x += action.num_steps
+        if action.direction == Direction.DOWN:
+            op_x -= action.num_steps
+        if action.direction == Direction.RIGHT:
+            op_y += action.num_steps
+        if action.direction == Direction.LEFT:
+            op_y -= action.num_steps
+        opponent = game_state.get_soldier_at_x_y(op_x, op_y)
+        if (opponent.color == self.op_color and action.soldier.color == self.color) or (
+                opponent.color == self.color and action.soldier.color == self.op_color):
+            return opponent
 
         return None
 
@@ -129,8 +170,21 @@ class GuessingAlphaBetaAgent(Agent):
             self.store_alpha_beta(game_state, depth, self.color)
             for action in legal_actions:
                 # self.store_alpha_beta(game_state, depth, self.color)
+                soldier_revealed = self.find_opp_soldier_we_revealed(action, game_state)
+                need_restore = [False, False]
+                if soldier_revealed is not None:
+                    if game_state.can_op_soldier_be_flag[soldier_revealed]:
+                        game_state.can_op_soldier_be_flag[soldier_revealed] = False
+                        need_restore[0] = True
+                    if game_state.can_op_soldier_be_flag[action.soldier]:
+                        game_state.can_op_soldier_be_flag[action.soldier] = False
+                        need_restore[1] = True
                 board = game_state.get_successor(action)
                 new_alpha = self.alpha_beta(alpha, beta, game_state, depth, False)[0]
+                if need_restore[0]:
+                    game_state.can_op_soldier_be_flag[soldier_revealed] = True
+                if need_restore[1]:
+                    game_state.can_op_soldier_be_flag[action.soldier] = True
                 self.restore_alpha_beta(board, depth, self.color)
                 if new_alpha > alpha:
                     max_action = action
@@ -148,8 +202,21 @@ class GuessingAlphaBetaAgent(Agent):
             self.store_alpha_beta(game_state, depth, self.op_color)
             for action in legal_actions:
                 # self.store_alpha_beta(game_state, depth, op_color)
+                soldier_revealed = self.find_opp_soldier_we_revealed(action, game_state)
+                need_restore = [False, False]
+                if soldier_revealed is not None:
+                    if game_state.can_op_soldier_be_flag[soldier_revealed]:
+                        game_state.can_op_soldier_be_flag[soldier_revealed] = False
+                        need_restore[0] = True
+                    if game_state.can_op_soldier_be_flag[action.soldier]:
+                        game_state.can_op_soldier_be_flag[action.soldier] = False
+                        need_restore[1] = True
                 board = self._get_successor_opponent(game_state, action, self.op_color)
                 new_beta = self.alpha_beta(alpha, beta, game_state, depth - 1, True)[0]
+                if need_restore[0]:
+                    game_state.can_op_soldier_be_flag[soldier_revealed] = True
+                if need_restore[1]:
+                    game_state.can_op_soldier_be_flag[action.soldier] = True
                 self.restore_alpha_beta(board, depth, self.op_color)
                 if new_beta < beta:
                     min_action = action

@@ -1,5 +1,8 @@
+from typing import Callable
+
 from agents.agent import Agent
 from constants import Degree, BOARD_SIZE, SOLDIER_COUNT_FOR_EACH_DEGREE
+from evaluate_score import null_evaluate_score
 from game_state import GameState
 from graphics.stratego_graphic import StrategoGraphic
 from constants import Color
@@ -8,14 +11,14 @@ from soldier import Soldier
 
 class StrategoGame(object):
     def __init__(self, red_agent: Agent, blue_agent: Agent, graphic: StrategoGraphic,
-                 sleep_between_actions: bool = False):
+                 evaluate_score: Callable[[GameState, Color], float] = null_evaluate_score):
         self._red_agent = red_agent
         self._blue_agent = blue_agent
         self._graphic = graphic
         self._state: GameState = None
         self._game_ended = False
         self._turn_count = 0
-        self._sleep_between_actions = sleep_between_actions
+        self._evaluate_score = evaluate_score
 
     def get_initial_board(self):
         red_board = self._red_agent.get_initial_positions()
@@ -54,19 +57,24 @@ class StrategoGame(object):
 
     def _game_loop(self):
         while not self._state.done:
-            # if self._sleep_between_actions:
-            #     time.sleep(10)
             self._turn_count += 1
             red_action = self._red_agent.get_action(self._state)
-            self._state.apply_action(red_action)
-            self._graphic.show_board(self._state)
+            if red_action is None:
+                self._state.winner = Color.BLUE
+                self._state.done = True
+            else:
+                self._state.apply_action(red_action)
+                self._graphic.show_board(self._state)
             if self._state.done:
                 break
-            # if self._sleep_between_actions:
-            #     time.sleep(10)
             self._turn_count += 1
             blue_action = self._blue_agent.get_action(self._state)
-            self._state.apply_action(blue_action)
-            self._graphic.show_board(self._state)
+            if blue_action is None:
+                self._state.winner = Color.RED
+                self._state.done = True
+            else:
+                self._state.apply_action(blue_action)
+                self._graphic.show_board(self._state)
+            self._state.score = self._evaluate_score(self._state, Color.RED, self._red_agent, self._blue_agent)
         self._graphic.game_over(self._state.winner, self._state.score)
         return self._state.score, self._turn_count

@@ -87,3 +87,10 @@ def init_take_1_heuristic(board: List[List[Soldier]]):
                + (1 / (abs(avg_right - avg_middle))*REGULARIZATION)\
                + (1 / (abs(avg_right - avg_left)))*REGULARIZATION
     return val
+
+
+def init_flag_in_second_row_heuristic(board: List[List[Soldier]]):
+    for j in range(10):
+        if board[2][j].degree == Degree.FLAG:
+            return 10
+    return 0
