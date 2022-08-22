@@ -22,14 +22,14 @@ from agents.guessing_alpha_beta_agent import GuessingAlphaBetaAgent
 
 def main():
     graphic = StrategoGraphic(BOARD_SIZE)
-    red_agent = GuessingAlphaBetaAgent(Color.RED, graphic, InitHillClimbingAgent(init_flag_in_second_row_heuristic),
+    red_agent = GuessingAlphaBetaAgent(Color.RED, graphic, InitHillClimbingAgent(init_take_1_heuristic),
                                        heuristic=protect_flag_and_attack_heuristic,
-                                       opponent_heuristic=null_heuristic, depth=2)
-    blue_agent = HumanAgent(Color.BLUE, graphic, InitHillClimbingAgent(init_take_1_heuristic))
-    # blue_agent = GuessingAlphaBetaAgent(Color.BLUE, graphic, InitHillClimbingAgent(init_take_1_heuristic),
-    #                                     heuristic=min_opp_soldiers_num_heuristic,
-    #                                     opponent_heuristic=min_opp_soldiers_num_heuristic, depth=2,
-    #                                     get_legal_actions_opponent=legal_actions_from_subset_guess)
+                                       opponent_heuristic=min_opp_soldiers_num_heuristic, depth=2)
+    # blue_agent = HumanAgent(Color.BLUE, graphic, InitHillClimbingAgent(init_take_1_heuristic))
+    blue_agent = GuessingAlphaBetaAgent(Color.BLUE, graphic, InitHillClimbingAgent(init_take_1_heuristic),
+                                        heuristic=min_opp_soldiers_num_heuristic,
+                                        opponent_heuristic=protect_flag_and_attack_heuristic, depth=2,
+                                        get_legal_actions_opponent=legal_actions_from_subset_guess)
     # red_agent = RandomAgent(Color.RED, graphic)
     # blue_agent = RandomAgent(Color.BLUE, graphic)
     num_of_games = 10

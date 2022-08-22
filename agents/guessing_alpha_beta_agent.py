@@ -28,7 +28,7 @@ class GuessingAlphaBetaAgent(Agent):
         self.op_color = Color.RED if self.color == Color.BLUE else Color.BLUE
 
     def get_action(self, game_state: GameState) -> Action:
-        if random.randint(1, 100) >= 94:
+        if random.randint(1, 100) >= 90:
             legal_actions = game_state.get_legal_actions(self.color)
             if len(legal_actions) == 0:
                 return None
@@ -77,30 +77,33 @@ class GuessingAlphaBetaAgent(Agent):
         can_op_soldier_be_flag = {}
         my_knowledge_base = game_state.get_knowledge_base(self.color)
         opp_soldiers = []
-        for i in range(BOARD_SIZE):
-            for j in range(BOARD_SIZE):
-                soldier_info = game_state.board[i][j]
-                if soldier_info.color == op_color:
-                    opp_soldiers.append([soldier_info,
-                                         game_state.get_knowledge_base(op_color).option_count_for_soldier(
-                                             soldier_info)])
-                if soldier_info.color == self.color:
-                    board[i][j] = Soldier(soldier_info.degree, soldier_info.x, soldier_info.y, self.color)
-                    my_options = my_knowledge_base.get_options_for_soldier(soldier_info)
-                    can_op_soldier_be_flag[board[i][j]] = True if Degree.FLAG in my_options else False
-
-        # random.shuffle(opp_soldiers)
         my_soldiers = game_state.get_knowledge_base(self.color).get_living_soldiers()
         flag = None
         for s in my_soldiers:
             if s.degree == Degree.FLAG:
                 flag = s
+        for i in range(BOARD_SIZE):
+            for j in range(BOARD_SIZE):
+                soldier_info = game_state.board[i][j]
+                if soldier_info.color == op_color:
+                    if abs(soldier_info.x - flag.x) + abs(soldier_info.y - flag.y) >= OP_DISTANCE_FROM_FLAG:
+                        opp_soldiers.append([soldier_info,
+                                             game_state.get_knowledge_base(op_color).option_count_for_soldier(
+                                                 soldier_info)])
+                    else:
+                        opp_soldiers.append([soldier_info, 1])
+                if soldier_info.color == self.color:
+                    board[i][j] = Soldier(soldier_info.degree, soldier_info.x, soldier_info.y, self.color)
+                    my_options = my_knowledge_base.get_options_for_soldier(soldier_info)
+                    can_op_soldier_be_flag[board[i][j]] = True if Degree.FLAG in my_options else False
+
         opp_soldiers.sort(key=lambda x: x[1])
         opp_knowledge_base = game_state.get_knowledge_base(op_color)
         options = [opp_knowledge_base.get_options_for_soldier(opp_soldiers[index][0]) for index in
                    range(len(opp_soldiers))]
         for i in range(len(options)):
-            random.shuffle(options[i])
+            if opp_soldiers[i][1] > 1:
+                random.shuffle(options[i])
         degree_opp = self.find_degree_for_opp_soldiers(game_state, opp_soldiers, [], num_soldiers_opponent_on_board, 0,
                                                        op_color, options, flag)
 
@@ -117,13 +120,6 @@ class GuessingAlphaBetaAgent(Agent):
                                      op_color, options, flag):
         if index == len(opp_soldiers):
             return degree
-        # options = game_state._soldier_knowledge_base[op_color][opp_soldiers[index][0]].copy()
-        # options = opp_knowledge_base.get_options_for_soldier(opp_soldiers[index][0])
-
-        # random.shuffle(options)
-        soldier = opp_soldiers[index][0]
-        if abs(soldier.x - flag.x) + abs(soldier.y - flag.y) < OP_DISTANCE_FROM_FLAG:
-            options[index].sort()
         for i in options[index]:
             if num_soldiers_opponent_on_board[i] > 0:
                 degree.append(i)

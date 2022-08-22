@@ -83,6 +83,23 @@ def opp_distance_to_flag_heuristic(game_state: GameState, color: Color):
     return distance
 
 
+def opp_close_to_my_flag_heuristic(game_state: GameState, color: Color):
+    is_done = math.inf if game_state.done else 0
+    if is_done != 0:
+        return is_done
+    op_color = Color.RED if color == Color.BLUE else Color.BLUE
+    my_flag = [s for s in game_state.get_knowledge_base(color).get_living_soldiers() if s.degree == Degree.FLAG]
+    if len(my_flag) == 0:
+        return 0
+    my_flag = my_flag[0]
+    val = 0
+    for s in game_state.get_knowledge_base(op_color).get_living_soldiers():
+        dis = abs(s.x - my_flag.x) + abs(s.y - my_flag.y)
+        if dis < OP_DISTANCE_FROM_FLAG:
+            val -= 50 * (OP_DISTANCE_FROM_FLAG - dis)
+    return val
+
+
 def distance_to_opp_flag_heuristic(game_state: GameState, color: Color):
     is_done = math.inf if game_state.done else 0
     if is_done != 0:
@@ -207,16 +224,15 @@ def naive_unit_count_heuristic(game_state: GameState, color: Color):
     return naive_unit_count_evaluator(game_state, color)
 
 
+# good heuristic
 def protect_flag_and_attack_heuristic(game_state: GameState, color: Color):
     is_done = math.inf if game_state.done else 0
     if is_done != 0:
         return is_done
     protect_my_flag = small_dist_opp_to_flag_heuristic(game_state, color)
-    op_close_to_my_flag = -10 if opp_distance_to_flag_heuristic(game_state, color) < OP_DISTANCE_FROM_FLAG else 0
+    op_close_to_my_flag = opp_close_to_my_flag_heuristic(game_state, color)
     most_far_soldier = my_most_far_soldier(game_state, color)
-    res = protect_my_flag + 5 * op_close_to_my_flag + most_far_soldier
-    if game_state.dead[color][Degree.FLAG] > 0:
-        return -10000
+    res = protect_my_flag + op_close_to_my_flag + most_far_soldier
     return res
 
 # try not to reveal 10
