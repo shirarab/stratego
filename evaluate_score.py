@@ -21,7 +21,10 @@ def get_num_weights():
     return pieceW, rankW, moveW, distW
 
 
-def weighted_num_soldiers_evaluator(game_state: GameState, color: Color, get_weights=get_num_weights, **kwargs):
+def weighted_num_soldiers_evaluator(game_state: GameState, color: Color, **kwargs):
+    get_weights = get_num_weights
+    if "get_weights" in kwargs.keys() and kwargs["get_weights"] is not None:
+        get_weights = kwargs["get_weights"]
     pieceW, rankW, moveW, distW = get_weights()
     sum = 0
     op_color = OP_COLOR[color]
@@ -89,7 +92,8 @@ def nuvc_get_soldier_points(soldier, op_has):
     return NUVC_VALUES_TABLE[soldier.degree]
 
 
-def naive_unit_value_count_evaluator(game_state: GameState, color: Color, red_agent, blue_agent):
+def naive_unit_value_count_evaluator(game_state: GameState, color: Color, **kwargs):
+    red_agent, blue_agent = kwargs["red_agent"], kwargs["blue_agent"]
     points = {Color.RED: 0, Color.BLUE: 0}
     red_soldiers = red_agent.soldiers
     blue_soldiers = blue_agent.soldiers
@@ -114,7 +118,8 @@ def jeroen_mets_get_soldier_points(soldier: Soldier):
     return points
 
 
-def jeroen_mets_evaluator(game_state: GameState, color: Color, red_agent, blue_agent):
+def jeroen_mets_evaluator(game_state: GameState, color: Color, **kwargs):
+    red_agent, blue_agent = kwargs["red_agent"], kwargs["blue_agent"]
     points = {Color.RED: 0, Color.BLUE: 0}
     for soldier in red_agent.soldiers:
         points[Color.RED] += jeroen_mets_get_soldier_points(soldier)
