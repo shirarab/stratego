@@ -84,8 +84,7 @@ def null_heuristic(game_state: GameState, color: Color):
 
 
 def random_heuristic(game_state: GameState, color: Color):
-    index = random.randint(0, len(AGENT_HEURISTICS)-1)
-    return AGENT_HEURISTICS[index](game_state, color)
+    return random.randint(1, 10)
 
 
 def max_my_soldier_num(game_state: GameState, color: Color):
@@ -250,6 +249,3 @@ def my_most_far_soldier(game_state: GameState, color: Color):
 # attack pieces from high to low
 # never leave flag unprotected
 # start with moving lower pieces and then once enemy's pieces are revealed kill them with higher ranks
-
-AGENT_HEURISTICS = [min_opp_soldiers_num_heuristic, attack_opponent_heuristic, max_me_min_opponent_heuristic,
-                    protect_flag_and_attack_heuristic]
