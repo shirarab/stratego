@@ -101,9 +101,24 @@ class GuessingAlphaBetaAgent(Agent):
         opp_knowledge_base = game_state.get_knowledge_base(op_color)
         options = [opp_knowledge_base.get_options_for_soldier(opp_soldiers[index][0]) for index in
                    range(len(opp_soldiers))]
+        op_flag = [index for index in range(len(opp_soldiers)) if
+                   opp_soldiers[index][1] == 1 and options[index][0] == Degree.FLAG]
+        op_flag = True if len(op_flag) == 0 else False
+        if op_flag:
+            op_bombs = [index for index in range(len(opp_soldiers)) if
+                        options[index][0] == Degree.BOMB and opp_soldiers[index][1] == 1]
         for i in range(len(options)):
             if opp_soldiers[i][1] > 1:
-                random.shuffle(options[i])
+                to_shuffle = True
+                if op_flag and Degree.FLAG in options[i]:
+                    for bomb in op_bombs:
+                        b = opp_soldiers[bomb][0]
+                        s = opp_soldiers[i][0]
+                        if abs(s.x - b.x) + abs(s.y - b.y) <= 2:
+                            to_shuffle = False
+                            break
+                if to_shuffle:
+                    random.shuffle(options[i])
         degree_opp = self.find_degree_for_opp_soldiers(game_state, opp_soldiers, [], num_soldiers_opponent_on_board, 0,
                                                        op_color, options, flag)
 
