@@ -10,10 +10,13 @@ def null_evaluate_score(game_state: GameState, color: Color, **kwargs):
 
 
 def num_soldiers_evaluator(game_state: GameState, color: Color, **kwargs):
+    """
+    evaluates the diff between living soldiers of the two players.
+    """
     op_color = OP_COLOR[color]
-    red_living_soldiers = game_state.get_knowledge_base(color).get_living_soldiers_count()
-    blue_living_soldiers = game_state.get_knowledge_base(op_color).get_living_soldiers_count()
-    return red_living_soldiers - blue_living_soldiers
+    living_soldiers = game_state.get_knowledge_base(color).get_living_soldiers_count()
+    op_living_soldiers = game_state.get_knowledge_base(op_color).get_living_soldiers_count()
+    return living_soldiers - op_living_soldiers
 
 
 def get_num_weights():
@@ -22,6 +25,9 @@ def get_num_weights():
 
 
 def weighted_num_soldiers_evaluator(game_state: GameState, color: Color, **kwargs):
+    """
+    evaluates base on position on board, discovered soldiers, degree.
+    """
     get_weights = get_num_weights
     if "get_weights" in kwargs.keys() and kwargs["get_weights"] is not None:
         get_weights = kwargs["get_weights"]
@@ -58,17 +64,24 @@ def weighted_num_soldiers_evaluator(game_state: GameState, color: Color, **kwarg
 
 # better than "flat_naive_unit_count_evaluator" and "jeroen_mets_evaluator"
 def naive_unit_count_evaluator(game_state: GameState, color: Color, **kwargs):
+    """
+    evaluates a ratio between friendlies and enemies.
+    """
     friendlies = game_state.get_knowledge_base(color).get_living_soldiers_count()
     enemies = game_state.get_knowledge_base(OP_COLOR[color]).get_living_soldiers_count()
     return 1 - (1 - (float(friendlies) / (enemies * 40)) ** 8)
 
 
 def flat_naive_unit_count_evaluator(game_state: GameState, color: Color, **kwargs):
+    """
+    evaluator similar to the NUC but flattens the ratio between friendlies and enemies.
+    """
     friendlies = game_state.get_knowledge_base(color).get_living_soldiers_count()
     enemies = game_state.get_knowledge_base(OP_COLOR[color]).get_living_soldiers_count()
     return (friendlies - enemies) / 80 + 0.5
 
 
+# nuvc helper function
 def nuvc_agent_has_10_bombs_spy(soldiers: Set[Soldier]):
     op_has = {Degree.ONE: False, Degree.THREE: 0, Degree.TEN: False}
     for s in soldiers:
@@ -83,16 +96,23 @@ def nuvc_agent_has_10_bombs_spy(soldiers: Set[Soldier]):
         if op_has[Degree.TEN] and op_has[Degree.THREE] >= 2 and op_has[Degree.ONE]:
             break
     op_has[Degree.THREE] = True if op_has[Degree.THREE] >= 2 else False
+
     return op_has
 
 
+# nuvc helper function
 def nuvc_get_soldier_points(soldier, op_has):
     if soldier.degree in op_has.keys():
-        return NUVC_VALUES_TABLE[soldier.degree][0] if op_has[soldier.degree] else NUVC_VALUES_TABLE[soldier.degree][1]
+        return NUVC_VALUES_TABLE[soldier.degree][0] if op_has[soldier.degree] \
+            else NUVC_VALUES_TABLE[soldier.degree][1]
     return NUVC_VALUES_TABLE[soldier.degree]
 
 
 def naive_unit_value_count_evaluator(game_state: GameState, color: Color, **kwargs):
+    """
+    evaluator for soldiers according to degrees and status, where  each degree has a specific
+    value that we add to each player's score for every living soldier of that degree.
+    """
     red_agent, blue_agent = kwargs["red_agent"], kwargs["blue_agent"]
     points = {Color.RED: 0, Color.BLUE: 0}
     red_soldiers = red_agent.soldiers
@@ -100,12 +120,18 @@ def naive_unit_value_count_evaluator(game_state: GameState, color: Color, **kwar
     red_has = nuvc_agent_has_10_bombs_spy(red_soldiers)
     blue_has = nuvc_agent_has_10_bombs_spy(blue_soldiers)
     for soldier in red_soldiers:
+        if not soldier.is_alive:
+            continue
         points[Color.RED] += nuvc_get_soldier_points(soldier, blue_has)
     for soldier in blue_soldiers:
+        if not soldier.is_alive:
+            continue
         points[Color.BLUE] += nuvc_get_soldier_points(soldier, red_has)
-    return points[Color.RED] / (points[Color.BLUE] * 324)
+
+    return points[color] / (points[OP_COLOR[color]] * 324)
 
 
+# jm helper function
 def jeroen_mets_get_soldier_points(soldier: Soldier):
     points = 0
     if not soldier.is_alive:
@@ -119,10 +145,14 @@ def jeroen_mets_get_soldier_points(soldier: Soldier):
 
 
 def jeroen_mets_evaluator(game_state: GameState, color: Color, **kwargs):
+    """
+    evaluates score such that every degree has a specific value based on if it
+    moved, was discovered, was captured.
+    """
     red_agent, blue_agent = kwargs["red_agent"], kwargs["blue_agent"]
     points = {Color.RED: 0, Color.BLUE: 0}
     for soldier in red_agent.soldiers:
         points[Color.RED] += jeroen_mets_get_soldier_points(soldier)
     for soldier in blue_agent.soldiers:
         points[Color.BLUE] += jeroen_mets_get_soldier_points(soldier)
-    return points[Color.RED] / (points[Color.BLUE] * 11087)
+    return points[color] / (points[OP_COLOR[color]] * 11087)
