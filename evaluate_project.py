@@ -90,7 +90,7 @@ def create_excel():
     for ev in SCORE_EVALUATORS:
         sheet.write(i, 0, 'AVG ' + ev, style_black)
         i += 1
-    wb.save('evaluate project.xls')
+    # wb.save('evaluate project.xls')
     return sheet, wb, style_red, style_blue, style_black
 
 
@@ -104,7 +104,8 @@ def main():
     all_combinations = list(itertools.combinations(all_combinations_for_one_agent, 2))
     graphic = StrategoGraphic(BOARD_SIZE)
     number_of_marathons = len(all_combinations) * 2 - (
-            len(random_agent_combinations) * (len(random_agent_combinations) - 1)) / 2
+            len(random_agent_combinations) * (len(random_agent_combinations) - 1)) / 2 - len(
+        random_agent_combinations) * len(agent_combinations)
     completed_marathons = 0
     col = 1
     print(f"---------------- {completed_marathons} / {number_of_marathons} ----------------")
@@ -115,9 +116,9 @@ def main():
 
         r_op_heuristic = [b_heuristic, random_heuristic]
         b_op_heuristic = [r_heuristic, random_heuristic]
-        if b_heuristic == random_heuristic and r_heuristic == random_heuristic:
-            r_op_heuristic = [random_heuristic]
-            b_op_heuristic = [random_heuristic]
+        if r_agent == RandomAgent or b_agent == RandomAgent:
+            r_op_heuristic = [b_heuristic]
+            b_op_heuristic = [r_heuristic]
         for op_heuristic_index in range(len(r_op_heuristic)):
             red_agent = r_agent(color=Color.RED, graphic=graphic, init_agent=r_init_agent(r_init_heuristic),
                                 heuristic=r_heuristic,
