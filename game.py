@@ -20,6 +20,10 @@ class StrategoGame(object):
         self._turn_count = 0
         self._evaluate_score = evaluate_score
 
+    @property
+    def state(self):
+        return self._state
+
     def get_initial_board(self):
         red_board = self._red_agent.get_initial_positions()
         blue_board = self._blue_agent.get_initial_positions()
