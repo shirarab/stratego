@@ -54,6 +54,13 @@ def average_degree_val(i_first, j_first, i_second, j_second, board: List[List[So
     return val / num_of_sol
 
 
+def init_flag_in_second_row_heuristic(board: List[List[Soldier]]):
+    for j in range(10):
+        if board[2][j].degree == Degree.FLAG:
+            return 10
+    return 0
+
+
 def init_take_1_heuristic(board: List[List[Soldier]]):
     val = 0
     for i in range(len(board)):
@@ -89,8 +96,24 @@ def init_take_1_heuristic(board: List[List[Soldier]]):
     return val
 
 
-def init_flag_in_second_row_heuristic(board: List[List[Soldier]]):
-    for j in range(10):
-        if board[2][j].degree == Degree.FLAG:
-            return 10
-    return 0
+def init_take_2_heuristic(board: List[List[Soldier]]):
+    val = 0
+    for i in range(len(board)):
+        for j in range(len(board[i])):
+            soldier = board[i][j]
+            if soldier.degree == Degree.FLAG and i == 0:
+                val += 1000
+            if soldier.degree == Degree.BOMB and next_to(i, j, Degree.FLAG, board):
+                val += 100
+            if soldier.degree == Degree.BOMB and i == len(board)-1:
+                val -= 5
+            if soldier.degree == Degree.ONE and i == len(board)-1:
+                val -= 5
+    avg_left = average_degree_val(0, 0, 3, 2, board)
+    avg_middle = average_degree_val(1, 3, 3, 6, board)
+    avg_right = average_degree_val(0, 7, 3, 9, board)
+    val -= abs(avg_right - avg_left)
+    val -= abs(avg_left - avg_middle)
+    val -= abs(avg_middle - avg_right)
+    return val
+

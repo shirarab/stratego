@@ -20,18 +20,32 @@ from agents.heuristics import *
 
 if __name__ == '__main__':
 # # <<<<<<< HEAD
-#     # graphic = ConsoleGraphic(10, 2)
-#     graphic = GuiGraphic(10, 2)
+#     graphic = ConsoleGraphic(10, 0)
+    graphic = GuiGraphic(10, 2)
 #     red_agent = AlphaBetaAgent(Color.RED, graphic, InitHillClimbingAgent(init_take_1_heuristic), depth=2,
 #                                heuristic=try_heuristic, opponent_heuristic=try_heuristic,
 #                                get_legal_actions_opponent=do_not_use_me_ever)
-#     # red_agent = RandomAgent(Color.RED, graphic, InitHillClimbingAgent(init_take_1_heuristic))
-#     blue_agent = RandomAgent(Color.BLUE, graphic)
-#     game = StrategoGame(red_agent, blue_agent, graphic, True)
-#     score = game.run()
+    red_agent = GuessingAlphaBetaAgent(Color.RED, graphic, InitHillClimbingAgent(init_take_2_heuristic), depth=2,
+                                       heuristic=sum_of_heuristics_heuristic,
+                                       opponent_heuristic=min_opp_soldiers_num_heuristic,
+                                       get_legal_actions_opponent=do_not_use_me_ever)
+    # red_agent = RandomAgent(Color.RED, graphic, InitHillClimbingAgent(init_take_2_heuristic))
+    blue_agent = RandomAgent(Color.BLUE, graphic)
+    # num_games = 10
+    # for i in range(num_games):
+    #     game = StrategoGame(red_agent, blue_agent, graphic)
+    #     s_time = time.time()
+    #     score, turn_count = game.run()
+    #     e_time = time.time()
+    #     print(f"Time: {e_time - s_time} sec, Turns: {turn_count}")
+    #
+    #     graphic = ConsoleGraphic(10, 0)
+    #     # graphic = GuiGraphic(10, 2)
+    game = StrategoGame(red_agent, blue_agent, graphic)
+    score = game.run()
 # # =======
 #     graphic = ConsoleGraphic(10, 0)
-    graphic = GuiGraphic(10, 2)
+#     graphic = GuiGraphic(10, 2)
     # red_agent = AlphaBetaAgent(Color.RED, graphic, InitRandomAgent(), depth=2,
     #                            heuristic=sum_of_heuristics_heuristic,
     #                            opponent_heuristic=sum_of_heuristics_heuristic,
@@ -41,20 +55,11 @@ if __name__ == '__main__':
     #                                    heuristic=sum_of_heuristics_heuristic,
     #                                    opponent_heuristic=min_opp_soldiers_num_heuristic,
     #                                    get_legal_actions_opponent=do_not_use_me_ever)
-    red_agent = RandomAgent(Color.RED, graphic)
-    blue_agent = RandomAgent(Color.BLUE, graphic)
+    # red_agent = RandomAgent(Color.RED, graphic)
+    # blue_agent = RandomAgent(Color.BLUE, graphic)
     # blue_agent = GuessingAlphaBetaAgent(Color.BLUE, graphic, InitRandomAgent(), depth=2,
     #                                     heuristic=min_opp_soldiers_num_heuristic,
     #                                     opponent_heuristic=sum_of_heuristics_heuristic,
     #                                     get_legal_actions_opponent=do_not_use_me_ever)
 # >>>>>>> ea2ff9ce5bc24a5bced1e8b4ac4dcdb4da210720
 
-    num_games = 10
-    for i in range(num_games):
-        game = StrategoGame(red_agent, blue_agent, graphic, True)
-        s_time = time.time()
-        score, turn_count = game.run()
-        e_time = time.time()
-        print(f"Time: {e_time - s_time} sec, Turns: {turn_count}")
-
-        graphic = GuiGraphic(10, 2)
