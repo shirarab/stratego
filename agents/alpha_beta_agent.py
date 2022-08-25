@@ -34,7 +34,7 @@ class AlphaBetaAgent(Agent):
             new_legal_action = set()
             for action in legal_actions:
                 soldier = self.find_opp_soldier_we_revealed(action, game_state)
-                if soldier is not None and \
+                if soldier is not None and soldier.show_me and \
                         (soldier.degree == Degree.BOMB or soldier.degree > action.soldier.degree):
                     continue
                 new_legal_action.add(action)

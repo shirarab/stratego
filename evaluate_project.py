@@ -49,7 +49,7 @@ FOR_PRINT = {
     RandomAgent: "RandomAgent",
     InitHillClimbingAgent: "InitHillClimbingAgent",
     InitRandomAgent: "InitRandomAgent",
-    init_take_1_heuristic: "init_heuristic",
+    init_take_2_heuristic: "init_heuristic",
     min_opp_soldiers_num_heuristic: "min_opp_soldiers_num_heuristic",
     attack_opponent_heuristic: "attack_opponent_heuristic",
     max_me_min_opponent_heuristic: "max_me_min_opponent_heuristic",
@@ -58,7 +58,7 @@ FOR_PRINT = {
 }
 AGENTS = [GuessingAlphaBetaAgent]
 INIT_AGENTS = [InitHillClimbingAgent, InitRandomAgent]
-INIT_HEURISTICS = [init_take_1_heuristic]
+INIT_HEURISTICS = [init_take_2_heuristic]
 AGENT_HEURISTICS = [min_opp_soldiers_num_heuristic, attack_opponent_heuristic, max_me_min_opponent_heuristic,
                     protect_flag_and_attack_heuristic]
 
@@ -88,9 +88,12 @@ def create_excel():
     sheet.write(14, 0, 'AVG GAME DURATION (SECONDS)', style_black)
     i = 15
     for ev in SCORE_EVALUATORS:
-        sheet.write(i, 0, 'AVG ' + ev, style_black)
+        sheet.write(i, 0, 'AVG ' + ev + '- RED', style_red)
         i += 1
-    # wb.save('evaluate project.xls')
+    for ev in SCORE_EVALUATORS:
+        sheet.write(i, 0, 'AVG ' + ev + '- BLUE', style_blue)
+        i += 1
+    wb.save('evaluate project.xls')
     return sheet, wb, style_red, style_blue, style_black
 
 
@@ -109,7 +112,9 @@ def main():
     completed_marathons = 0
     col = 1
     print(f"---------------- {completed_marathons} / {number_of_marathons} ----------------")
-    for k in range(len(all_combinations)):
+    start_index = 0
+    last_index = len(all_combinations) - 1
+    for k in range(start_index, last_index+1):
         first_agent, second_agent = all_combinations[k]
         r_agent, r_init_agent, r_init_heuristic, r_heuristic = first_agent
         b_agent, b_init_agent, b_init_heuristic, b_heuristic = second_agent
@@ -127,7 +132,8 @@ def main():
                                  heuristic=b_heuristic,
                                  opponent_heuristic=b_op_heuristic[op_heuristic_index], depth=2)
             num_of_games = 10 if r_agent != RandomAgent or b_agent != RandomAgent else 30
-            evaluate_score_avg = EVALUATE_SCORE_AVG.copy()
+            evaluate_score_avg_red = EVALUATE_SCORE_AVG.copy()
+            evaluate_score_avg_blue = EVALUATE_SCORE_AVG.copy()
             game_marathon_summary = GAME_MARATHON_SUMMARY.copy()
             for j in range(num_of_games):
                 graphic = ConsoleGraphic(10, 0)
@@ -143,9 +149,12 @@ def main():
                 game_marathon_summary[TIME] += float(duration) / num_of_games
 
                 for evaluator in SCORE_EVALUATORS:
-                    evaluate_score_avg[evaluator] += float(SCORE_EVALUATORS[evaluator](game.state, Color.RED,
-                                                                                       red_agent=red_agent,
-                                                                                       blue_agent=blue_agent)) / num_of_games
+                    evaluate_score_avg_red[evaluator] += float(SCORE_EVALUATORS[evaluator](game.state, Color.RED,
+                                                                                           red_agent=red_agent,
+                                                                                           blue_agent=blue_agent)) / num_of_games
+                    evaluate_score_avg_blue[evaluator] += float(SCORE_EVALUATORS[evaluator](game.state, Color.BLUE,
+                                                                                            red_agent=red_agent,
+                                                                                            blue_agent=blue_agent)) / num_of_games
 
             sheet.write(0, col, col, style_black)
             sheet.write(1, col, FOR_PRINT[r_agent], style_red)
@@ -164,7 +173,10 @@ def main():
             sheet.write(14, col, game_marathon_summary[TIME], style_black)
             i = 15
             for ev in SCORE_EVALUATORS:
-                sheet.write(i, col, evaluate_score_avg[ev], style_black)
+                sheet.write(i, col, evaluate_score_avg_red[ev], style_red)
+                i += 1
+            for ev in SCORE_EVALUATORS:
+                sheet.write(i, col, evaluate_score_avg_blue[ev], style_blue)
                 i += 1
             col += 1
             wb.save('evaluate project.xls')
@@ -182,10 +194,10 @@ def main():
             # f.write("\n")
             completed_marathons += 1
             print(f"---------------- {completed_marathons} / {number_of_marathons} ----------------")
-        #     if completed_marathons > 1:
-        #         break
-        # if completed_marathons > 1:
-        #     break
+            if completed_marathons > 0:
+                break
+        if completed_marathons > 0:
+            break
     wb.save('evaluate project.xls')
     # f.close()
 
