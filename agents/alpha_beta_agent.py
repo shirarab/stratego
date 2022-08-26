@@ -40,6 +40,7 @@ class AlphaBetaAgent(Agent):
                 new_legal_action.add(action)
             if len(new_legal_action) == 0:
                 return rand_action
+            return random.sample(new_legal_action, 1)[0]
         self.store_alpha_beta(game_state, self.depth + 1, self.color)
         val, action = self.alpha_beta(-float("inf"), float("inf"), game_state, self.depth, True)
         self.restore_alpha_beta(game_state, self.depth + 1, self.color)
