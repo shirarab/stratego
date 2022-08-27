@@ -1,12 +1,13 @@
-from constants import Direction
+from constants import Direction, Degree
 from soldier import Soldier
 
 
 class Action(object):
-    def __init__(self, soldier: Soldier, direction: Direction, num_steps: int):
+    def __init__(self, soldier: Soldier, direction: Direction, num_steps: int, assumed_degree: Degree = None):
         self._soldier = soldier
         self._direction = direction
         self._num_steps = num_steps
+        self._assumed_degree = assumed_degree
 
     @property
     def soldier(self):
@@ -19,6 +20,10 @@ class Action(object):
     @property
     def num_steps(self):
         return self._num_steps
+    
+    @property
+    def assumed_degree(self):
+        return self._assumed_degree
 
     def __eq__(self, other):
         if self.soldier != other.soldier \

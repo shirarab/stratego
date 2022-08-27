@@ -26,7 +26,7 @@ class AlphaBetaAgent(Agent):
         self.op_color = OP_COLOR[color]
 
     def get_action(self, game_state: GameState) -> Action:
-        if random.randint(1, 100) >= 90:
+        if random.randint(1, 100) >= 70:
             legal_actions = game_state.get_legal_actions(self.color)
             if len(legal_actions) == 0:
                 return None
@@ -64,7 +64,7 @@ class AlphaBetaAgent(Agent):
             self.store_alpha_beta(game_state, depth, self.color)
             for action in legal_actions:
                 # self.store_alpha_beta(game_state, depth, self.color)
-                board = game_state.get_successor(action)
+                board = game_state.get_successor(action, assume_loss=True)
                 new_alpha = self.alpha_beta(alpha, beta, game_state, depth, False)[0]
                 self.restore_alpha_beta(board, depth, self.color)
                 if new_alpha > alpha:
@@ -74,7 +74,7 @@ class AlphaBetaAgent(Agent):
                     break
             return alpha, max_action
         else:
-            op_color = Color.RED if self.color == Color.BLUE else Color.BLUE
+            op_color = OP_COLOR[self.color]
             legal_actions = self._get_legal_actions_opponent(game_state, op_color)
             if depth == 0 or not legal_actions:
                 return self.opponent_heuristic(game_state, op_color), None

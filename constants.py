@@ -54,7 +54,6 @@ UNMOVABLE = {
 }
 
 SOLDIER_COUNT_FOR_EACH_DEGREE = {
-    Degree.FLAG: 1,
     Degree.BOMB: 6,
     Degree.ONE: 1,
     Degree.TWO: 8,
@@ -65,7 +64,8 @@ SOLDIER_COUNT_FOR_EACH_DEGREE = {
     Degree.SEVEN: 3,
     Degree.EIGHT: 2,
     Degree.NINE: 1,
-    Degree.TEN: 1
+    Degree.TEN: 1,
+    Degree.FLAG: 1
 }
 
 

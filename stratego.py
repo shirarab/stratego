@@ -23,7 +23,7 @@ def main():
         s_time = time.time()
         score, turn_count = game.run()
         e_time = time.time()
-        print(f"Time: {e_time - s_time} sec, Turns: {turn_count}")
+        print(f"Time: {e_time - s_time:.5f} sec, Turns: {turn_count}")
 
 
 if __name__ == '__main__':

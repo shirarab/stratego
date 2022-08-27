@@ -1,9 +1,8 @@
 from collections import Counter
 from copy import copy, deepcopy
-from typing import Dict
+from typing import Dict, Union
 
 from constants import Color, Degree, BOARD_SIZE, PLAYER_SOLDIER_DEGREES_LIST, SOLDIER_COUNT_FOR_EACH_DEGREE, UNMOVABLE
-# from game_state import GameState
 from soldier import Soldier
 
 
@@ -17,32 +16,33 @@ class KnowledgeBase(object):
         Create a new knowledge base (all options possible) from given game state and color.
         
         Attributes:
-            self._color : color of the player this kb is about
+            self._color: color of the player this kb is about
             self._soldier_knowledge_base: KB with soldier as keys, degrees as values
-            self._degree_knowledge_base : KB with degree as key and soldiers as values
-            self._singletons : count how many soldiers are identified for sure as a certain degree
-            self._do_update : bool saying if new information that requires updating has been exposed
-            self._degrees_to_update : set of degrees that need updating
+            self._degree_knowledge_base: KB with degree as key and soldiers as values
+            self._singletons: count how many soldiers are identified for sure as a certain degree
+            self._exposed: dictionary with exposed soldiers as keys, exposed degrees as values
+            self._do_update: bool saying if new information that requires updating has been exposed
+            self._degrees_to_update: set of degrees that need updating
         """
         self._color = color
         self._soldier_knowledge_base = dict()  # KB with soldier as keys, degrees as values
         self._degree_knowledge_base = {deg: [] for deg in SOLDIER_COUNT_FOR_EACH_DEGREE}
         self._moved_soldiers = set()
         self._singletons = Counter()
+        self._exposed = dict()
         self._do_update = False
         self._degrees_to_update = set()
         # init the knowledge base with full options for each opponent soldier:
         for i in range(BOARD_SIZE):
             for j in range(BOARD_SIZE):
                 if board[i][j].color == self._color:
-                    for deg in SOLDIER_COUNT_FOR_EACH_DEGREE:
+                    for deg in self._degree_knowledge_base:
                         self._degree_knowledge_base[deg].append(board[i][j])
                     self._soldier_knowledge_base[board[i][j]] = PLAYER_SOLDIER_DEGREES_LIST.copy()
     
     def update(self, game_state):
         """
-        Get the color of a player and update its knowledge base according to game rules constraints, such as total
-        number of each type of soldier
+        Update the knowledge base according to game rules constraints, such as total number of each type of soldier
         """
         while self._do_update:
             self._do_update = False
@@ -60,6 +60,7 @@ class KnowledgeBase(object):
                             if len(self._soldier_knowledge_base[soldier]) == 1:
                                 new_single_degree = self._soldier_knowledge_base[soldier][0]
                                 self._singletons[new_single_degree] += 1
+                                self._exposed[soldier] = new_single_degree
                                 self._do_update = True
                                 new_degrees_to_update.add(new_single_degree)
                             if len(self._soldier_knowledge_base[soldier]) == 0:
@@ -89,21 +90,25 @@ class KnowledgeBase(object):
             return False
         if len(self._soldier_knowledge_base[soldier]) == 1:  # if removing a singleton, update the counter
             self._singletons[soldier.degree] -= 1
+            self._exposed.pop(soldier, None)
         self._soldier_knowledge_base.pop(soldier, None)
         for deg in SOLDIER_COUNT_FOR_EACH_DEGREE:
             if soldier in self._degree_knowledge_base[deg]:
                 self._degree_knowledge_base[deg].remove(soldier)
+        if soldier in self._moved_soldiers:
+            self._moved_soldiers.remove(soldier)
         return True
     
-    def add_new_singleton(self, soldier: Soldier, deg: Degree):
+    def add_new_singleton(self, soldier: Soldier, deg: Degree, check_is_singleton=True):
         """
         Add the info for a new soldier that was detected with certainty
         """
-        if len(self._soldier_knowledge_base[soldier]) > 1:
+        if not check_is_singleton or len(self._soldier_knowledge_base[soldier]) > 1:
             self._do_update = True
             self._degrees_to_update.add(deg)
             self._soldier_knowledge_base[soldier] = [deg]
             self._singletons[deg] += 1
+            self._exposed[soldier] = deg
         elif len(self._soldier_knowledge_base[soldier]) == 1 and self._soldier_knowledge_base[soldier][0] != deg:
             raise KnowledgeBaseContradiction(
                 f"Tried to add singleton of degree {deg}, "
@@ -119,18 +124,27 @@ class KnowledgeBase(object):
         If a soldier has moved, record that it can't be bomb or flag
         """
         self._moved_soldiers.add(soldier)
-        for unmovable_degree in UNMOVABLE:
-            if unmovable_degree in self._soldier_knowledge_base[soldier]:
-                self._degrees_to_update.add(unmovable_degree)
-                self._do_update = True
-                self._soldier_knowledge_base[soldier].remove(unmovable_degree)
-                if soldier in self._degree_knowledge_base[unmovable_degree]:
-                    self._degree_knowledge_base[unmovable_degree].remove(soldier)
-        # check if we created a singleton as a result of removing options
-        if len(self._soldier_knowledge_base[soldier]) == 1:
-            self.add_new_singleton(soldier, self._soldier_knowledge_base[soldier][0])
-        if len(self._soldier_knowledge_base[soldier]) == 0:
-            raise KnowledgeBaseContradiction(f"No options left for soldier {soldier}")
+        if soldier not in self._exposed:
+            for unmovable_degree in UNMOVABLE:
+                if unmovable_degree in self._soldier_knowledge_base[soldier]:
+                    self._degrees_to_update.add(unmovable_degree)
+                    self._do_update = True
+                    self._soldier_knowledge_base[soldier].remove(unmovable_degree)
+                    if soldier in self._degree_knowledge_base[unmovable_degree]:
+                        self._degree_knowledge_base[unmovable_degree].remove(soldier)
+            # check if we created a singleton as a result of removing options
+            if len(self._soldier_knowledge_base[soldier]) == 1:
+                self.add_new_singleton(soldier, self._soldier_knowledge_base[soldier][0], check_is_singleton=False)
+            if len(self._soldier_knowledge_base[soldier]) == 0:
+                raise KnowledgeBaseContradiction(f"No options left for soldier {soldier}")
+    
+    def is_soldier_exposed(self, soldier: Soldier) -> bool:
+        return soldier in self._exposed
+    
+    def get_singleton_value(self, soldier: Soldier) -> Union[Degree, None]:
+        if soldier in self._exposed:
+            return self._exposed[soldier]
+        return None
     
     def get_moved_soldiers(self):
         return set(self._moved_soldiers)
@@ -150,6 +164,9 @@ class KnowledgeBase(object):
                 return max(self._soldier_knowledge_base[s])
         return 0
     
+    def get_singleton_count(self, deg: Degree):
+        return self._singletons[deg]
+    
     def store_kb(self):
         store_soldier_kb, store_degree_kb = dict(), dict()
         for sol in self._soldier_knowledge_base:
@@ -157,12 +174,13 @@ class KnowledgeBase(object):
         for deg in self._degree_knowledge_base:
             store_degree_kb[deg] = copy(self._degree_knowledge_base[deg])
         data = self._color, store_soldier_kb, store_degree_kb, \
-            deepcopy(self._singletons), self._do_update, set(self._degrees_to_update)
+            deepcopy(self._singletons), self._do_update, set(self._degrees_to_update), \
+            copy(self._exposed), copy(self._moved_soldiers)
         return data
     
     def restore_kb(self, stored_info):
         (self._color, self._soldier_knowledge_base, self._degree_knowledge_base, self._singletons, self._do_update,
-         self._degrees_to_update) = stored_info
+         self._degrees_to_update, self._exposed, self._moved_soldiers) = stored_info
     
     def get_living_soldiers(self):
         return list(self._soldier_knowledge_base.keys())
@@ -181,8 +199,8 @@ class KnowledgeBase(object):
             for sol, deg in assignment.items():
                 self.add_new_singleton(sol, deg)
             self.update(game_state)
-        except KnowledgeBaseContradiction:
+        except KnowledgeBaseContradiction as e:
             is_consistent = False
+            # print(e.args)
         self.restore_kb(current_kb_data)
         return is_consistent
-    
