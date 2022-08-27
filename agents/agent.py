@@ -2,12 +2,12 @@ import abc
 
 from agents.init_agents.init_agent import InitAgent
 from agents.init_agents.init_random_agent import InitRandomAgent
-from graphics.stratego_graphic import StrategoGraphic
+from graphics.graphic import Graphic
 from agents.heuristics import null_heuristic
 
 
 class Agent(object):
-    def __init__(self, color, graphic: StrategoGraphic, init_agent: InitAgent = None,
+    def __init__(self, color, graphic: Graphic, init_agent: InitAgent = None,
                  heuristic=null_heuristic, opponent_heuristic=null_heuristic, depth: int = 1):
         self._heuristic = heuristic
         self._opponent_heuristic = opponent_heuristic

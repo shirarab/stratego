@@ -1,13 +1,13 @@
 from typing import Set
 
 from agents.init_agents.init_agent import InitAgent
-from graphics.stratego_graphic import StrategoGraphic
+from graphics.graphic import Graphic
 from constants import Color
 from soldier import Soldier#, Color
 
 
 class InitHumanAgent(InitAgent):
-    def get_initial_positions(self, soldiers: Set[Soldier], graphic: StrategoGraphic, color: Color = None):
+    def get_initial_positions(self, soldiers: Set[Soldier], graphic: Graphic, color: Color = None):
         cp_soldiers = soldiers.copy()
         optional_positions = set()
         num_rows, num_cols = 4, 10

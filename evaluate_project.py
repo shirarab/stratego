@@ -4,7 +4,7 @@ import time
 from game import StrategoGame
 from agents.heuristics import *
 from agents.opponent_actions import *
-from graphics.stratego_graphic import StrategoGraphic
+from graphics.graphic import Graphic
 
 from evaluate_score import *
 from graphics.console_graphic import ConsoleGraphic
@@ -105,7 +105,7 @@ def main():
     random_agent_combinations = list(itertools.product([RandomAgent], INIT_AGENTS, INIT_HEURISTICS, [random_heuristic]))
     all_combinations_for_one_agent = random_agent_combinations + agent_combinations
     all_combinations = list(itertools.combinations(all_combinations_for_one_agent, 2))
-    graphic = StrategoGraphic(BOARD_SIZE)
+    graphic = Graphic(BOARD_SIZE)
     number_of_marathons = len(all_combinations) * 2 - (
             len(random_agent_combinations) * (len(random_agent_combinations) - 1)) / 2 - len(
         random_agent_combinations) * len(agent_combinations)

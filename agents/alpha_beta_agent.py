@@ -7,7 +7,7 @@ import random
 from agents.init_agents.init_agent import InitAgent
 from agents.init_agents.init_random_agent import InitRandomAgent
 from game_state import GameState
-from graphics.stratego_graphic import StrategoGraphic
+from graphics.graphic import Graphic
 from constants import Color, Degree, Direction, OP_COLOR
 # from soldier import Color
 from agents.heuristics import null_heuristic
@@ -15,7 +15,7 @@ from agents.opponent_actions import null_get_legal_actions_opponent, null_get_su
 
 
 class AlphaBetaAgent(Agent):
-    def __init__(self, color, graphic: StrategoGraphic, init_agent: InitAgent,
+    def __init__(self, color, graphic: Graphic, init_agent: InitAgent,
                  heuristic=null_heuristic, opponent_heuristic=null_heuristic, depth: int = 1,
                  get_legal_actions_opponent=null_get_legal_actions_opponent,
                  get_successor_opponents=null_get_successor_opponent):

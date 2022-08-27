@@ -1,12 +1,9 @@
 import abc
 from typing import Tuple, Set, List
 
-# from action import Direction
-from constants import Degree, Direction
-# from degree import Degree
+from constants import Direction, Color, Degree
 from game_state import GameState
-from constants import Color
-from soldier import Soldier#, Color
+from soldier import Soldier
 
 RED = '#'
 BLUE = '@'
@@ -35,8 +32,7 @@ DIRECTION_MAP = {
     'left': Direction.LEFT
 }
 
-
-class StrategoGraphic(object):
+class Graphic(object):
     def __init__(self, board_size, num_players_to_show: int = 0):
         self._board_size = board_size
         self._num_players_to_show = num_players_to_show

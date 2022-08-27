@@ -5,7 +5,7 @@ from typing import Set
 from agents.init_agents.init_heuristics import init_null_heuristic
 from constants import Color
 from soldier import Soldier
-from graphics.stratego_graphic import StrategoGraphic
+from graphics.graphic import Graphic
 
 
 class InitAgent(object):
@@ -18,7 +18,7 @@ class InitAgent(object):
 
     @abc.abstractmethod
     def get_initial_positions(self, soldiers: Set[Soldier],
-                              graphic: StrategoGraphic, color: Color = None):
+                              graphic: Graphic, color: Color = None):
         return
 
     def get_initial_random_board(self, soldiers: Set[Soldier]):

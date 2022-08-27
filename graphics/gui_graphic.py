@@ -1,7 +1,7 @@
 from typing import List, Set, Tuple
 from constants import Degree, Color, DEAD_SOLDIERS, Direction
 from game_state import GameState
-from graphics.stratego_graphic import StrategoGraphic, DEGREE_TO_STR
+from graphics.graphic import Graphic, DEGREE_TO_STR
 from soldier import Soldier
 
 from graphics.gui_graphics.texts import *
@@ -31,7 +31,7 @@ SIDE_SOLDIERS_DEGREES = [
 ]
 
 
-class GuiGraphic(StrategoGraphic):
+class GuiGraphic(Graphic):
     def __init__(self, board_size, num_players_to_show: int = 0):
         super().__init__(board_size, num_players_to_show)
         if num_players_to_show == 0:

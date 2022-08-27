@@ -2,11 +2,11 @@ from typing import Set, Tuple, List
 
 from constants import Degree, Color, Direction
 from game_state import GameState
-from graphics.stratego_graphic import StrategoGraphic, RED, BLUE, DEGREE_TO_STR, DIRECTION_MAP
+from graphics.graphic import Graphic, RED, BLUE, DEGREE_TO_STR, DIRECTION_MAP
 from soldier import Soldier
 
 
-class ConsoleGraphic(StrategoGraphic):
+class ConsoleGraphic(Graphic):
 
     def show_board(self, game_state: GameState):
         if self.num_players_to_show == 0:

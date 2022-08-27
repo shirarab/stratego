@@ -4,13 +4,13 @@ from args_parser import ArgsParser
 from game import StrategoGame
 from agents.heuristics import *
 from agents.opponent_actions import *
-from graphics.stratego_graphic import StrategoGraphic
+from graphics.graphic import Graphic
 
 
 def main():
     my_parser = ArgsParser()
     my_parser.parse()
-    graphic = StrategoGraphic(BOARD_SIZE)
+    graphic = Graphic(BOARD_SIZE)
     red_agent = my_parser.get_agent(Color.RED, graphic)
     blue_agent = my_parser.get_agent(Color.BLUE, graphic)
     evaluation_function = my_parser.get_evaluation_function()

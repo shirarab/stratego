@@ -3,7 +3,7 @@ import time
 from game import StrategoGame
 from agents.heuristics import *
 from agents.opponent_actions import *
-from graphics.stratego_graphic import StrategoGraphic
+from graphics.graphic import Graphic
 
 from evaluate_score import *
 from graphics.console_graphic import ConsoleGraphic
@@ -21,7 +21,7 @@ from agents.guessing_alpha_beta_agent import GuessingAlphaBetaAgent
 
 
 def main():
-    graphic = StrategoGraphic(BOARD_SIZE)
+    graphic = Graphic(BOARD_SIZE)
     red_agent = GuessingAlphaBetaAgent(Color.RED, graphic, InitHillClimbingAgent(init_take_1_heuristic),
                                        heuristic=protect_flag_and_attack_heuristic,
                                        opponent_heuristic=min_opp_soldiers_num_heuristic, depth=2)

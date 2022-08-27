@@ -10,7 +10,7 @@ from agents.random_agent import RandomAgent
 from constants import BOARD_SIZE, Color
 from graphics.console_graphic import ConsoleGraphic
 from graphics.gui_graphic import GuiGraphic
-from graphics.stratego_graphic import StrategoGraphic
+from graphics.graphic import Graphic
 
 DISPLAYS = {'console': ConsoleGraphic,
             'gui': GuiGraphic}
@@ -141,7 +141,7 @@ class ArgsParser(object):
             return INIT_AGENTS[init_agent_name]()
         return INIT_AGENTS[init_agent_name](heuristic=init_heuristic)
 
-    def get_agent(self, color: Color, graphic: StrategoGraphic):
+    def get_agent(self, color: Color, graphic: Graphic):
         self.check_is_parse()
         init_agent = self.get_init_agent(color)
         agent_name = getattr(self._args, PLAYER_COLORS[color] + '_agent')

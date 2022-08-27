@@ -4,13 +4,13 @@ from agents.agent import Agent
 from constants import Degree, BOARD_SIZE, SOLDIER_COUNT_FOR_EACH_DEGREE
 from evaluate_score import null_evaluate_score
 from game_state import GameState
-from graphics.stratego_graphic import StrategoGraphic
+from graphics.graphic import Graphic
 from constants import Color
 from soldier import Soldier
 
 
 class StrategoGame(object):
-    def __init__(self, red_agent: Agent, blue_agent: Agent, graphic: StrategoGraphic,
+    def __init__(self, red_agent: Agent, blue_agent: Agent, graphic: Graphic,
                  evaluate_score: Callable[[GameState, Color], float] = null_evaluate_score):
         self._red_agent = red_agent
         self._blue_agent = blue_agent
