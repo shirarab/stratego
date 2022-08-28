@@ -36,7 +36,7 @@ def attack_opponent_heuristic(game_state: GameState, color: Color):
     if is_done != 0:
         return is_done
     val = 0
-    val += 2 * min_opp_soldiers_num_heuristic(game_state, color)
+    val += 15 * min_opp_soldiers_num_heuristic(game_state, color)
     val += min_of_opp_soldiers_that_are_flag_options_heuristic(game_state, color)
     return val
 
@@ -240,7 +240,6 @@ def my_most_far_soldier(game_state: GameState, color: Color):
             weight = random.uniform(0.2, 0.49)
         x += weight * soldier.x if color == Color.RED else weight * (BOARD_SIZE - soldier.x)
     return x
-
 
 # try not to reveal 10
 # once 10 revealed- it should attack only identified pieces.

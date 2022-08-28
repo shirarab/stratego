@@ -46,6 +46,7 @@ GAME_MARATHON_SUMMARY = {
 
 FOR_PRINT = {
     GuessingAlphaBetaAgent: "GuessingAlphaBetaAgent",
+    AlphaBetaAgent: "AlphaBetaAgent",
     RandomAgent: "RandomAgent",
     InitHillClimbingAgent: "InitHillClimbingAgent",
     InitRandomAgent: "InitRandomAgent",
@@ -54,13 +55,15 @@ FOR_PRINT = {
     attack_opponent_heuristic: "attack_opponent_heuristic",
     max_me_min_opponent_heuristic: "max_me_min_opponent_heuristic",
     protect_flag_and_attack_heuristic: "protect_flag_and_attack_heuristic",
+    better_num_soldiers_difference_heuristic: "better_num_soldiers_difference_heuristic",
     random_heuristic: "random_heuristic"
 }
-AGENTS = [GuessingAlphaBetaAgent]
 INIT_AGENTS = [InitHillClimbingAgent, InitRandomAgent]
 INIT_HEURISTICS = [init_take_2_heuristic]
-AGENT_HEURISTICS = [min_opp_soldiers_num_heuristic, attack_opponent_heuristic, max_me_min_opponent_heuristic,
-                    protect_flag_and_attack_heuristic]
+GUESSING_AGENT_HEURISTICS = [attack_opponent_heuristic, max_me_min_opponent_heuristic,
+                             protect_flag_and_attack_heuristic]
+ALPHA_BETA_AGENT_HEURISTICS = [attack_opponent_heuristic, better_num_soldiers_difference_heuristic]
+DEPTH = [2]
 
 
 # OP_HEURISTICS = AGENT_HEURISTICS.copy()
@@ -100,24 +103,28 @@ def create_excel():
 def main():
     sheet, wb, style_red, style_blue, style_black = create_excel()
     # f = open("evaluate_project.txt", "w")
-    agent_combinations = list(
-        itertools.product(AGENTS, INIT_AGENTS, INIT_HEURISTICS, AGENT_HEURISTICS))
-    random_agent_combinations = list(itertools.product([RandomAgent], INIT_AGENTS, INIT_HEURISTICS, [random_heuristic]))
-    all_combinations_for_one_agent = random_agent_combinations + agent_combinations
+    guessing_agent_combinations = list(
+        itertools.product([GuessingAlphaBetaAgent], INIT_AGENTS, INIT_HEURISTICS, GUESSING_AGENT_HEURISTICS, DEPTH))
+    alpha_beta_agent_combinations = list(
+        itertools.product([AlphaBetaAgent], INIT_AGENTS, INIT_HEURISTICS, ALPHA_BETA_AGENT_HEURISTICS, DEPTH))
+    random_agent_combinations = list(
+        itertools.product([RandomAgent], INIT_AGENTS, INIT_HEURISTICS, [random_heuristic], [1]))
+    all_combinations_for_one_agent = random_agent_combinations + guessing_agent_combinations
+    all_combinations_for_one_agent += alpha_beta_agent_combinations
     all_combinations = list(itertools.combinations(all_combinations_for_one_agent, 2))
     graphic = Graphic(BOARD_SIZE)
     number_of_marathons = len(all_combinations) * 2 - (
             len(random_agent_combinations) * (len(random_agent_combinations) - 1)) / 2 - len(
-        random_agent_combinations) * len(agent_combinations)
+        random_agent_combinations) * (len(guessing_agent_combinations) + len(alpha_beta_agent_combinations))
     completed_marathons = 0
     col = 1
     print(f"---------------- {completed_marathons} / {number_of_marathons} ----------------")
-    start_index = 0
-    last_index = len(all_combinations) - 1
-    for k in range(start_index, last_index+1):
+    start_index = max(0, 0)
+    last_index = min(2, len(all_combinations) - 1)
+    for k in range(start_index, last_index + 1):
         first_agent, second_agent = all_combinations[k]
-        r_agent, r_init_agent, r_init_heuristic, r_heuristic = first_agent
-        b_agent, b_init_agent, b_init_heuristic, b_heuristic = second_agent
+        r_agent, r_init_agent, r_init_heuristic, r_heuristic, r_depth = first_agent
+        b_agent, b_init_agent, b_init_heuristic, b_heuristic, b_depth = second_agent
 
         r_op_heuristic = [b_heuristic, random_heuristic]
         b_op_heuristic = [r_heuristic, random_heuristic]
@@ -127,10 +134,10 @@ def main():
         for op_heuristic_index in range(len(r_op_heuristic)):
             red_agent = r_agent(color=Color.RED, graphic=graphic, init_agent=r_init_agent(r_init_heuristic),
                                 heuristic=r_heuristic,
-                                opponent_heuristic=r_op_heuristic[op_heuristic_index], depth=2)
+                                opponent_heuristic=r_op_heuristic[op_heuristic_index], depth=r_depth)
             blue_agent = b_agent(color=Color.BLUE, graphic=graphic, init_agent=b_init_agent(b_init_heuristic),
                                  heuristic=b_heuristic,
-                                 opponent_heuristic=b_op_heuristic[op_heuristic_index], depth=2)
+                                 opponent_heuristic=b_op_heuristic[op_heuristic_index], depth=b_depth)
             num_of_games = 10 if r_agent != RandomAgent or b_agent != RandomAgent else 30
             evaluate_score_avg_red = EVALUATE_SCORE_AVG.copy()
             evaluate_score_avg_blue = EVALUATE_SCORE_AVG.copy()
@@ -194,10 +201,10 @@ def main():
             # f.write("\n")
             completed_marathons += 1
             print(f"---------------- {completed_marathons} / {number_of_marathons} ----------------")
-            if completed_marathons > 0:
-                break
-        if completed_marathons > 0:
-            break
+        #     if completed_marathons > 0:
+        #         break
+        # if completed_marathons > 0:
+        #     break
     wb.save('evaluate project.xls')
     # f.close()
 
