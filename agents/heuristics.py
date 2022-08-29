@@ -54,7 +54,7 @@ def max_me_min_opponent_heuristic(game_state: GameState, color: Color):
     op_close_to_my_flag = -10 if opp_distance_to_flag_heuristic(game_state, color) < OP_DISTANCE_FROM_FLAG else 0
     most_far_soldier = my_most_far_soldier(game_state, color)
     return 3 * max_me + 7 * min_op + op_flag_count + dis_op_flag + protect_my_flag \
-           + op_close_to_my_flag + most_far_soldier
+           + op_close_to_my_flag + 10 * most_far_soldier
 
 
 # good heuristic - use for opp heuristic for guessing agent only
@@ -65,7 +65,7 @@ def protect_flag_and_attack_heuristic(game_state: GameState, color: Color):
     protect_my_flag = large_soldiers_near_flag_heuristic(game_state, color)
     op_close_to_my_flag = opp_close_to_my_flag_heuristic(game_state, color)
     most_far_soldier = my_most_far_soldier(game_state, color)
-    res = protect_my_flag + op_close_to_my_flag + most_far_soldier
+    res = protect_my_flag + op_close_to_my_flag + 10 * most_far_soldier
     return res
 
 
@@ -122,14 +122,18 @@ def opp_distance_to_flag_heuristic(game_state: GameState, color: Color):
     if is_done != 0:
         return is_done
     op_color = Color.RED if color == Color.BLUE else Color.BLUE
-    loc = []
-    for s in game_state.get_knowledge_base(op_color).get_living_soldiers():
-        loc.append([s.x, s.y])
-    my_flag = [s for s in game_state.get_knowledge_base(color).get_living_soldiers() if s.degree == Degree.FLAG]
-    if len(my_flag) == 0:
+    my_flag = None
+    if color == Color.RED:
+        my_flag = game_state.red_flag
+    else:
+        my_flag = game_state.blue_flag
+    if my_flag is None:
         return -10
-    my_flag = my_flag[0]
-    distance, index = spatial.KDTree(loc).query([my_flag.x, my_flag.y])
+    distance = BOARD_SIZE
+    for s in game_state.get_knowledge_base(op_color).get_living_soldiers():
+        dis = abs(s.x - my_flag[0]) + abs(s.y - my_flag[1])
+        if dis < distance:
+            distance = dis
     return distance
 
 
@@ -141,13 +145,16 @@ def opp_close_to_my_flag_heuristic(game_state: GameState, color: Color):
     if is_done != 0:
         return is_done
     op_color = Color.RED if color == Color.BLUE else Color.BLUE
-    my_flag = [s for s in game_state.get_knowledge_base(color).get_living_soldiers() if s.degree == Degree.FLAG]
-    if len(my_flag) == 0:
-        return 0
-    my_flag = my_flag[0]
+    my_flag = None
+    if color == Color.RED:
+        my_flag = game_state.red_flag
+    else:
+        my_flag = game_state.blue_flag
+    if my_flag is None:
+        return -10
     val = 0
     for s in game_state.get_knowledge_base(op_color).get_living_soldiers():
-        dis = abs(s.x - my_flag.x) + abs(s.y - my_flag.y)
+        dis = abs(s.x - my_flag[0]) + abs(s.y - my_flag[1])
         if dis < OP_DISTANCE_FROM_FLAG:
             val -= 50 * (OP_DISTANCE_FROM_FLAG - dis)
     return val
@@ -232,12 +239,14 @@ def get_random_weights():
 def my_most_far_soldier(game_state: GameState, color: Color):
     my_soldiers = game_state.get_knowledge_base(color).get_living_soldiers()
     x = 0
+    weight1 = random.uniform(0.5, 1.5)
+    weight2 = random.uniform(0.2, 0.49)
     for soldier in my_soldiers:
         weight = 0
         if (color == Color.RED and soldier.x > 5) or (color == Color.BLUE and soldier.x < 4):
-            weight = random.uniform(0.5, 1.5)
+            weight = weight1
         elif 6 > soldier.x > 3:
-            weight = random.uniform(0.2, 0.49)
+            weight = weight2
         x += weight * soldier.x if color == Color.RED else weight * (BOARD_SIZE - soldier.x)
     return x
 

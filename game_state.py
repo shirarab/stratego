@@ -11,7 +11,7 @@ class GameState(object):
     def __init__(self, board, score=0, done=False, dead=None, kb_info=None, can_op_soldier_be_flag=None):
         """
         Create a new instance of game state
-        
+
         Attributes:
             self._board : Two-dimensional array of Soldier objects
             self._score :
@@ -23,6 +23,17 @@ class GameState(object):
         self._board = board
         self._score = score
         self._done = done
+        self._blue_flag = None
+        self._red_flag = None
+        for i in range(BOARD_SIZE):
+            for j in range(BOARD_SIZE):
+                soldier = self._board[i][j]
+                if soldier.degree == Degree.FLAG:
+                    if soldier.color == Color.RED:
+                        self._red_flag = [i, j]
+                    else:
+                        self._blue_flag = [i, j]
+                        break
 
         self.can_op_soldier_be_flag = can_op_soldier_be_flag  # can be None
         if dead is None:
@@ -40,6 +51,14 @@ class GameState(object):
     @property
     def done(self):
         return self._done
+
+    @property
+    def red_flag(self):
+        return self._red_flag
+
+    @property
+    def blue_flag(self):
+        return self._blue_flag
 
     @done.setter
     def done(self, value):
