@@ -3,6 +3,7 @@ Instructions for running the game from linux terminal:
 1. make new virtual environment:
 
     virtualenv .stratego -p python3
+
     source .stratego/bin/activate.csh
 
 2. install requirements:
