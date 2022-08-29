@@ -55,14 +55,14 @@ FOR_PRINT = {
     attack_opponent_heuristic: "attack_opponent_heuristic",
     max_me_min_opponent_heuristic: "max_me_min_opponent_heuristic",
     protect_flag_and_attack_heuristic: "protect_flag_and_attack_heuristic",
-    better_num_soldiers_difference_heuristic: "better_num_soldiers_difference_heuristic",
+    expose_soldiers_and_advance_heuristic: "expose_soldiers_and_advance_heuristic",
     random_heuristic: "random_heuristic"
 }
 INIT_AGENTS = [InitHillClimbingAgent, InitRandomAgent]
 INIT_HEURISTICS = [init_take_2_heuristic]
 GUESSING_AGENT_HEURISTICS = [attack_opponent_heuristic, max_me_min_opponent_heuristic,
                              protect_flag_and_attack_heuristic]
-ALPHA_BETA_AGENT_HEURISTICS = [attack_opponent_heuristic, better_num_soldiers_difference_heuristic]
+ALPHA_BETA_AGENT_HEURISTICS = [attack_opponent_heuristic, expose_soldiers_and_advance_heuristic]
 DEPTH = [2]
 
 
@@ -118,7 +118,7 @@ def main():
         random_agent_combinations) * (len(guessing_agent_combinations) + len(alpha_beta_agent_combinations))
     completed_marathons = 0
     col = 1
-    print(f"---------------- {completed_marathons} / {number_of_marathons} ----------------")
+    print(f"---------------- complete - {completed_marathons} ----------------")
     start_index = max(3, 0)
     last_index = min(6, len(all_combinations) - 1)
     for k in range(start_index, last_index + 1):
@@ -200,7 +200,7 @@ def main():
             #     f.write(f" - the average {evaluator} : {evaluate_score_avg[evaluator]}\n")
             # f.write("\n")
             completed_marathons += 1
-            print(f"---------------- {completed_marathons} / {number_of_marathons} ----------------")
+            print(f"---------------- complete - {completed_marathons} ----------------")
         #     if completed_marathons > 0:
         #         break
         # if completed_marathons > 0:

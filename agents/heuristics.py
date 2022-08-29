@@ -70,7 +70,7 @@ def protect_flag_and_attack_heuristic(game_state: GameState, color: Color):
 
 
 # heuristic for alpha-beta
-def better_num_soldiers_difference_heuristic(game_state: GameState, color: Color):
+def expose_soldiers_and_advance_heuristic(game_state: GameState, color: Color):
     return weighted_num_soldiers_evaluator(game_state, color, get_weights=get_random_weights)
 
 
