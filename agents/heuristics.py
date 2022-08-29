@@ -38,6 +38,7 @@ def attack_opponent_heuristic(game_state: GameState, color: Color):
     val = 0
     val += 15 * min_opp_soldiers_num_heuristic(game_state, color)
     val += min_of_opp_soldiers_that_are_flag_options_heuristic(game_state, color)
+
     return val
 
 
@@ -49,12 +50,12 @@ def max_me_min_opponent_heuristic(game_state: GameState, color: Color):
     max_me = max_my_soldier_degree(game_state, color)
     min_op = min_opp_soldiers_num_heuristic(game_state, color)
     op_flag_count = min_of_opp_soldiers_that_are_flag_options_heuristic(game_state, color)
-    dis_op_flag = 5 if distance_to_opp_flag_heuristic(game_state, color) < OP_DISTANCE_FROM_FLAG else 0
+    # dis_op_flag = 5 if distance_to_opp_flag_heuristic(game_state, color) < OP_DISTANCE_FROM_FLAG else 0
     protect_my_flag = large_soldiers_near_flag_heuristic(game_state, color)
     op_close_to_my_flag = -10 if opp_distance_to_flag_heuristic(game_state, color) < OP_DISTANCE_FROM_FLAG else 0
     most_far_soldier = my_most_far_soldier(game_state, color)
-    return 3 * max_me + 7 * min_op + op_flag_count + dis_op_flag + protect_my_flag \
-           + op_close_to_my_flag + 10 * most_far_soldier
+    return 3 * max_me + 7 * min_op + op_flag_count + protect_my_flag \
+           + op_close_to_my_flag + 10 * most_far_soldier  # + dis_op_flag
 
 
 # good heuristic - use for opp heuristic for guessing agent only
@@ -99,7 +100,8 @@ def max_my_soldier_degree(game_state: GameState, color: Color):
     if is_done != 0:
         return is_done
     val = 0
-    for s in game_state.get_knowledge_base(color).get_living_soldiers():
+    soldiers = game_state.get_knowledge_base(color).get_living_soldiers()
+    for s in soldiers:
         if s.degree == Degree.TWO:
             continue
         val += s.degree if (s.degree != Degree.BOMB and s.degree != Degree.THREE) else 5
@@ -118,20 +120,18 @@ def min_opp_soldier_degree_heuristic(game_state: GameState, color: Color):
 def opp_distance_to_flag_heuristic(game_state: GameState, color: Color):
     # guessing agent only - for opp heuristic
     # return the distance of the closest opp soldier to my flag
-    is_done = math.inf if game_state.done else 0
-    if is_done != 0:
-        return is_done
-    op_color = Color.RED if color == Color.BLUE else Color.BLUE
-    my_flag = None
-    if color == Color.RED:
-        my_flag = game_state.red_flag
-    else:
-        my_flag = game_state.blue_flag
+    if game_state.done:
+        return math.inf
+    op_color = OP_COLOR[color]
+    my_flag = game_state.red_flag if color == Color.RED else game_state.blue_flag
     if my_flag is None:
         return -10
     distance = BOARD_SIZE
-    for s in game_state.get_knowledge_base(op_color).get_living_soldiers():
-        dis = abs(s.x - my_flag[0]) + abs(s.y - my_flag[1])
+    flag_x = my_flag[0]
+    flag_y = my_flag[1]
+    soldiers = game_state.get_knowledge_base(op_color).get_living_soldiers()
+    for s in soldiers:
+        dis = abs(s.x - flag_x) + abs(s.y - flag_y)
         if dis < distance:
             distance = dis
     return distance
@@ -141,20 +141,18 @@ def opp_close_to_my_flag_heuristic(game_state: GameState, color: Color):
     # guessing agent only - for opp heuristic
     # returns a lower value as more enemy soldiers approach my flag.
     # The value is higher for a soldier according to his proximity to the flag
-    is_done = math.inf if game_state.done else 0
-    if is_done != 0:
-        return is_done
-    op_color = Color.RED if color == Color.BLUE else Color.BLUE
-    my_flag = None
-    if color == Color.RED:
-        my_flag = game_state.red_flag
-    else:
-        my_flag = game_state.blue_flag
+    if game_state.done:
+        return math.inf
+    op_color = OP_COLOR[color]
+    my_flag = game_state.red_flag if color == Color.RED else game_state.blue_flag
     if my_flag is None:
         return -10
     val = 0
-    for s in game_state.get_knowledge_base(op_color).get_living_soldiers():
-        dis = abs(s.x - my_flag[0]) + abs(s.y - my_flag[1])
+    flag_x = my_flag[0]
+    flag_y = my_flag[1]
+    soldiers = game_state.get_knowledge_base(op_color).get_living_soldiers()
+    for s in soldiers:
+        dis = abs(s.x - flag_x) + abs(s.y - flag_y)
         if dis < OP_DISTANCE_FROM_FLAG:
             val -= 50 * (OP_DISTANCE_FROM_FLAG - dis)
     return val
@@ -175,20 +173,17 @@ def large_soldiers_near_flag_heuristic(game_state: GameState, color: Color):
     is_done = math.inf if game_state.done else 0
     if is_done != 0:
         return is_done
-    flag_x, flag_y = (0, 0)
+
     living_soldiers = game_state.get_knowledge_base(color).get_living_soldiers()
-    for soldier in living_soldiers:
-        if soldier.degree == Degree.FLAG:
-            flag_x, flag_y = soldier.position
-            break
+    my_flag = game_state.red_flag if color == Color.RED else game_state.blue_flag
+    flag_x = my_flag[0]
+    flag_y = my_flag[1]
     count_soldiers = 0
     for soldier in living_soldiers:
-        if soldier.degree == Degree.FLAG or soldier.degree < Degree.SEVEN:
+        if soldier.degree < Degree.SEVEN:
             continue
         x, y = soldier.position
-        diff_x = abs(x - flag_x)
-        diff_y = abs(y - flag_y)
-        if diff_x + diff_y < 3:
+        if abs(x - flag_x) + abs(y - flag_y) < 3:
             count_soldiers += 1
             if count_soldiers == 2:
                 return 6
@@ -240,14 +235,23 @@ def my_most_far_soldier(game_state: GameState, color: Color):
     my_soldiers = game_state.get_knowledge_base(color).get_living_soldiers()
     x = 0
     weight1 = random.uniform(0.5, 1.5)
-    weight2 = random.uniform(0.2, 0.49)
-    for soldier in my_soldiers:
-        weight = 0
-        if (color == Color.RED and soldier.x > 5) or (color == Color.BLUE and soldier.x < 4):
-            weight = weight1
-        elif 6 > soldier.x > 3:
-            weight = weight2
-        x += weight * soldier.x if color == Color.RED else weight * (BOARD_SIZE - soldier.x)
+    weight2 = random.uniform(0.2, 0.7)
+    if color == Color.RED:
+        for soldier in my_soldiers:
+            weight = 0
+            if 6 > soldier.x > 3:
+                weight = weight2
+            elif soldier.x > 5:
+                weight = weight1
+            x += weight * soldier.x
+    else:
+        for soldier in my_soldiers:
+            weight = 0
+            if 6 > soldier.x > 3:
+                weight = weight2
+            elif soldier.x < 4:
+                weight = weight1
+            x += weight * (BOARD_SIZE - soldier.x)
     return x
 
 # try not to reveal 10
