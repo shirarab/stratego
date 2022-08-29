@@ -55,5 +55,7 @@ blue alpha beta agent, random_heuristic, ...:
 
 interesting games:
 1. -g gui -p 1 -ba RandomAgent -ra GuessingAlphaBetaAgent -rih init_take_1_heuristic -rh interesting_heuristic -d 1 -n 5
-2. 
+2. -g gui -p 2 -ba RandomAgent -ra GuessingAlphaBetaAgent -ria InitHillClimbingAgent -rih init_take_2_heuristic -rh 
+naive_unit_count_heuristic -d 1 -n 5 -e naive_unit_value_count_evaluator
+3. 
 """

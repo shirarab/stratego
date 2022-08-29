@@ -54,7 +54,7 @@ Explanation about command line arguments:
                         The blue agent init heuristic (relevant for hill climbing init agent).
 
   -rh RED_HEURISTIC, --red_heuristic RED_HEURISTIC
-                        The red agent heuristic, used to evaluate game states in the search tree. should be the name 
+                        The red agent heuristic, used to evaluate game states in the search tree. Should be the name 
                         of a function from agents/heuristics.py
 
   -bh BLUE_HEURISTIC, --blue_heuristic BLUE_HEURISTIC

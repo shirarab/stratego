@@ -43,7 +43,10 @@ class ArgsParser(object):
                                   choices=DISPLAYS.keys(), help='The game ui.',
                                   default=DEFAULT_DISPLAY, type=str)
         self._parser.add_argument('-p', '--num_players_to_show', dest='num_players_to_show',
-                                  choices=[0, 1, 2], help='The number of players to show on board.',
+                                  choices=[0, 1, 2],
+                                  help='The number of players to show on board - if 2, degrees of soldiers of both '
+                                       'sides will be visible in the UI. If chosen 1, only the degrees of the red '
+                                       'player will be visible.',
                                   default=1, type=int)
         self._parser.add_argument('-d', '--depth', dest='depth',
                                   help='The maximum depth for to search in the game tree.',
@@ -54,10 +57,14 @@ class ArgsParser(object):
 
         # init agents and agents
         self._parser.add_argument('-ria', '--red_init_agent', dest='red_init_agent',
-                                  choices=INIT_AGENTS.keys(), help='The red init agent.',
+                                  choices=INIT_AGENTS.keys(),
+                                  help='The red init agent - the agent for initial placement of soldiers for red '
+                                       'player.',
                                   default=None, type=str)
         self._parser.add_argument('-bia', '--blue_init_agent', dest='blue_init_agent',
-                                  choices=INIT_AGENTS.keys(), help='The blue init agent.',
+                                  choices=INIT_AGENTS.keys(),
+                                  help='The blue init agent - the agent for initial placement of soldiers for blue '
+                                       'player.',
                                   default=None, type=str)
         self._parser.add_argument('-ra', '--red_agent', dest='red_agent',
                                   choices=AGENTS.keys(), help='The red agent.',
@@ -68,41 +75,48 @@ class ArgsParser(object):
 
         # score evaluation function
         self._parser.add_argument('-e', '--evaluation_function', dest='evaluation_function',
-                                  help='The evaluation function for ai agent.',
+                                  help='The evaluation function for the game scoring.',
                                   default=DEFAULT_EVALUATION_FUNCTION, type=str)
 
         # init agents heuristics
         self._parser.add_argument('-rih', '--red_init_heuristic', dest='red_init_heuristic',
-                                  help='The red agent init heuristic.',
+                                  help='The red agent init heuristic (relevant for hill climbing init agent).',
                                   default=None, type=str)
         self._parser.add_argument('-bih', '--blue_init_heuristic', dest='blue_init_heuristic',
-                                  help='The blue agent init heuristic.',
+                                  help='The blue agent init heuristic (relevant for hill climbing init agent).',
                                   default=None, type=str)
 
         # agents heuristics and functions
         self._parser.add_argument('-rh', '--red_heuristic', dest='red_heuristic',
-                                  help='The red agent heuristic.',
+                                  help='The red agent heuristic, used to evaluate game states in the search tree. '
+                                       'Should be the name of a function from agents/heuristics.py',
                                   default=None, type=str)
         self._parser.add_argument('-bh', '--blue_heuristic', dest='blue_heuristic',
-                                  help='The blue agent heuristic.',
+                                  help='The blue agent heuristic, used to evaluate game states in the search tree.',
                                   default=None, type=str)
         self._parser.add_argument('-roh', '--red_opponent_heuristic', dest='red_opponent_heuristic',
-                                  help='The red agent opponent heuristic.',
+                                  help='The red agent opponent heuristic - the heuristic that the red agent will '
+                                       'assume its opponent has.',
                                   default=None, type=str)
         self._parser.add_argument('-boh', '--blue_opponent_heuristic', dest='blue_opponent_heuristic',
-                                  help='The blue agent opponent heuristic.',
+                                  help='The blue agent opponent heuristic - the heuristic that the blue agent will '
+                                       'assume its opponent has.',
                                   default=None, type=str)
         self._parser.add_argument('-rola', '--red_get_legal_actions_opponent', dest='red_get_legal_actions_opponent',
-                                  help='The get legal actions of red opponent.',
+                                  help='The function used by the red player to estimate the legal actions of his '
+                                       'opponent (relevant when choosing AlphaBetaAgent).',
                                   default=None, type=str)
         self._parser.add_argument('-bola', '--blue_get_legal_actions_opponent', dest='blue_get_legal_actions_opponent',
-                                  help='The get legal actions of blue opponent.',
+                                  help='The function used by the blue player to estimate the legal actions of his '
+                                       'opponent.',
                                   default=None, type=str)
         self._parser.add_argument('-ros', '--red_get_successor_opponents', dest='red_get_successor_opponents',
-                                  help='The get successor of red opponent.',
+                                  help='The get successor of red player - function used by red player to estimate '
+                                       'successors of opponent actions.',
                                   default=None, type=str)
         self._parser.add_argument('-bos', '--blue_get_successor_opponents', dest='blue_get_successor_opponents',
-                                  help='The get successor of blue opponent.',
+                                  help='The get successor of blue player - function used by blue player to estimate '
+                                       'successors of opponent actions.',
                                   default=None, type=str)
 
         self._args = self._parser.parse_args()
