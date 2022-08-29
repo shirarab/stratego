@@ -96,7 +96,7 @@ def init_take_1_heuristic(board: List[List[Soldier]]):
     return val
 
 
-def init_take_2_heuristic(board: List[List[Soldier]]):
+def init_scattering_heuristic(board: List[List[Soldier]]):
     val = 0
     for i in range(len(board)):
         for j in range(len(board[i])):

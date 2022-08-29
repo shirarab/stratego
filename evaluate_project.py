@@ -50,7 +50,7 @@ FOR_PRINT = {
     RandomAgent: "RandomAgent",
     InitHillClimbingAgent: "InitHillClimbingAgent",
     InitRandomAgent: "InitRandomAgent",
-    init_take_2_heuristic: "init_heuristic",
+    init_scattering_heuristic: "init_heuristic",
     min_opp_soldiers_num_heuristic: "min_opp_soldiers_num_heuristic",
     attack_opponent_heuristic: "attack_opponent_heuristic",
     max_me_min_opponent_heuristic: "max_me_min_opponent_heuristic",
@@ -59,7 +59,7 @@ FOR_PRINT = {
     random_heuristic: "random_heuristic"
 }
 INIT_AGENTS = [InitHillClimbingAgent, InitRandomAgent]
-INIT_HEURISTICS = [init_take_2_heuristic]
+INIT_HEURISTICS = [init_scattering_heuristic]
 GUESSING_AGENT_HEURISTICS = [attack_opponent_heuristic, max_me_min_opponent_heuristic,
                              protect_flag_and_attack_heuristic]
 ALPHA_BETA_AGENT_HEURISTICS = [attack_opponent_heuristic, expose_soldiers_and_advance_heuristic]
@@ -162,7 +162,7 @@ def main():
                     evaluate_score_avg_blue[evaluator] += float(SCORE_EVALUATORS[evaluator](game.state, Color.BLUE,
                                                                                             red_agent=red_agent,
                                                                                             blue_agent=blue_agent)) / num_of_games
-            col_ = start_index + op_heuristic_index
+            col_ = k + op_heuristic_index
             sheet.write(0, col, col_, style_black)
             sheet.write(1, col, FOR_PRINT[r_agent], style_red)
             sheet.write(2, col, FOR_PRINT[r_init_agent], style_red)

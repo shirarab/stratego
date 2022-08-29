@@ -26,7 +26,7 @@ class AlphaBetaAgent(Agent):
         self.op_color = OP_COLOR[color]
 
     def get_action(self, game_state: GameState) -> Action:
-        if random.randint(1, 100) >= 70:
+        if random.randint(1, 100) >= 80:
             legal_actions = game_state.get_legal_actions(self.color)
             if len(legal_actions) == 0:
                 return None

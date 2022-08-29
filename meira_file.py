@@ -25,7 +25,7 @@ if __name__ == '__main__':
 #     red_agent = AlphaBetaAgent(Color.RED, graphic, InitHillClimbingAgent(init_take_1_heuristic), depth=2,
 #                                heuristic=try_heuristic, opponent_heuristic=try_heuristic,
 #                                get_legal_actions_opponent=do_not_use_me_ever)
-    red_agent = GuessingAlphaBetaAgent(Color.RED, graphic, InitHillClimbingAgent(init_take_2_heuristic), depth=2,
+    red_agent = GuessingAlphaBetaAgent(Color.RED, graphic, InitHillClimbingAgent(init_scattering_heuristic), depth=2,
                                        heuristic=sum_of_heuristics_heuristic,
                                        opponent_heuristic=min_opp_soldiers_num_heuristic,
                                        get_legal_actions_opponent=do_not_use_me_ever)
