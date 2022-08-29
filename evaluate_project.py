@@ -119,8 +119,8 @@ def main():
     completed_marathons = 0
     col = 1
     print(f"---------------- {completed_marathons} / {number_of_marathons} ----------------")
-    start_index = max(0, 0)
-    last_index = min(2, len(all_combinations) - 1)
+    start_index = max(3, 0)
+    last_index = min(6, len(all_combinations) - 1)
     for k in range(start_index, last_index + 1):
         first_agent, second_agent = all_combinations[k]
         r_agent, r_init_agent, r_init_heuristic, r_heuristic, r_depth = first_agent
@@ -162,8 +162,8 @@ def main():
                     evaluate_score_avg_blue[evaluator] += float(SCORE_EVALUATORS[evaluator](game.state, Color.BLUE,
                                                                                             red_agent=red_agent,
                                                                                             blue_agent=blue_agent)) / num_of_games
-
-            sheet.write(0, col, col, style_black)
+            col_ = start_index + op_heuristic_index
+            sheet.write(0, col, col_, style_black)
             sheet.write(1, col, FOR_PRINT[r_agent], style_red)
             sheet.write(2, col, FOR_PRINT[r_init_agent], style_red)
             sheet.write(3, col, FOR_PRINT[r_init_heuristic], style_red)
