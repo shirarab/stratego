@@ -147,9 +147,9 @@ class GuiGraphic(Graphic):
     def _add_widgets(self):
         """ Adds widgets to frames """
         # Game title:
-        self._boggle_label = tk.Label(self._screen_frame, text=ROOT_TITLE,
-                                      **TITLE_LABEL_STYLE)
-        self._boggle_label.pack(side=tk.TOP, pady=(0, 0), expand=True)
+        self._title_label = tk.Label(self._screen_frame, text=ROOT_TITLE,
+                                     **TITLE_LABEL_STYLE)
+        self._title_label.pack(side=tk.TOP, pady=(0, 0), expand=True)
 
     def _make_button(self, soldier: Soldier, row: int, col: int):
         """ Creates a single button """
