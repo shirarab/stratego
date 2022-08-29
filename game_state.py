@@ -164,12 +164,12 @@ class GameState(object):
             if killed.degree != winner.degree:
                 self.knowledge_bases[winner.color].add_new_singleton(winner, winner.degree)
 
-    def get_successor(self, action: Action, assume_loss=False):
+    def get_successor(self, action: Action):
         # check if we need to record in kb
-        self.apply_action(action, keep_record_in_kb=False, assume_loss=assume_loss)
+        self.apply_action(action, keep_record_in_kb=False)
         return self
 
-    def apply_action(self, action: Action, keep_record_in_kb=True, assume_loss=False):
+    def apply_action(self, action: Action, keep_record_in_kb=True):
         """
         keep_record_in_kb should be set to False if this action is part of a search tree and not an actual game
         action (this is important especially for opponent actions, as the guessed actions can lead to KB contradictions)
@@ -202,11 +202,6 @@ class GameState(object):
             instead_opponent = action.soldier
             action.soldier.set_position(op_x, op_y)
             action.soldier.set_has_moved()
-        # elif not opponent.show_me and assume_loss:
-        #     if action_soldier_degree > Degree.SIX:
-        #         self.shot_and_dead(opponent, action.soldier, keep_record=False)
-        #     else:
-        #         self.shot_and_dead(action.soldier, opponent, keep_record=False)
         elif opponent_degree == Degree.BOMB:
             if action_soldier_degree == Degree.THREE:
                 instead_opponent = action.soldier
@@ -226,18 +221,15 @@ class GameState(object):
             instead_opponent = action.soldier
             self.shot_and_dead(opponent, action.soldier, keep_record_in_kb)
             action.soldier.set_position(op_x, op_y)
-        elif opponent_degree > action_soldier_degree:
             action.soldier.set_has_moved()
-        elif opponent_degree > action.soldier.degree:
+        elif opponent_degree > action_soldier_degree:
             self.shot_and_dead(action.soldier, opponent, keep_record_in_kb)
         elif opponent_degree < action_soldier_degree:
             instead_opponent = action.soldier
             self.shot_and_dead(opponent, action.soldier, keep_record_in_kb)
             action.soldier.set_position(op_x, op_y)
-        elif opponent_degree == action_soldier_degree:
-            instead_opponent = Soldier(Degree.EMPTY, sol_x, sol_y, Color.GRAY)
             action.soldier.set_has_moved()
-        elif opponent_degree == action.soldier.degree:
+        elif opponent_degree == action_soldier_degree:
             instead_opponent = Soldier(Degree.EMPTY, op_x, op_y, Color.GRAY)
             self.shot_and_dead(action.soldier, opponent, keep_record_in_kb)
             self.shot_and_dead(opponent, action.soldier, keep_record_in_kb)

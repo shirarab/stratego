@@ -64,7 +64,7 @@ class AlphaBetaAgent(Agent):
             self.store_alpha_beta(game_state, depth, self.color)
             for action in legal_actions:
                 # self.store_alpha_beta(game_state, depth, self.color)
-                board = game_state.get_successor(action, assume_loss=True)
+                board = game_state.get_successor(action)
                 new_alpha = self.alpha_beta(alpha, beta, game_state, depth, False)[0]
                 self.restore_alpha_beta(board, depth, self.color)
                 if new_alpha > alpha:
