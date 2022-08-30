@@ -14,6 +14,10 @@ Instructions for running the game from linux terminal:
 
     python3 stratego.py [--args]
 
+
+=======================================================================
+
+
 Example runs:
 
 1. runs a game of human player against smart alpha beta (guessing approach)
@@ -42,6 +46,8 @@ naive_opp_get_successor -p 2
 python3 stratego.py -g gui -p 1 -ba RandomAgent -ra GuessingAlphaBetaAgent -ria InitHillClimbingAgent -rih 
 init_scattering_heuristic -rh naive_unit_count_heuristic -d 1 -n 5 -e naive_unit_value_count_evaluator
     
+
+=============================================================================
 
 
 Explanation about command line arguments:
