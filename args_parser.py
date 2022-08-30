@@ -49,10 +49,10 @@ class ArgsParser(object):
                                        'player will be visible.',
                                   default=1, type=int)
         self._parser.add_argument('-d', '--depth', dest='depth',
-                                  help='The maximum depth for to search in the game tree.',
+                                  help='The maximum depth for to search in the game tree. Default is 2.',
                                   default=2, type=int)
         self._parser.add_argument('-n', '--num_of_games', dest='num_of_games',
-                                  help='The number of games to run.',
+                                  help='The number of games to run. Default is 1.',
                                   default=1, type=int)
 
         # init agents and agents
