@@ -119,8 +119,8 @@ def main():
     completed_marathons = 0
     col = 1
     print(f"---------------- complete - {completed_marathons} ----------------")
-    start_index = max(3, 0)
-    last_index = min(6, len(all_combinations) - 1)
+    start_index = max(39, 0)
+    last_index = min(40, len(all_combinations) - 1)
     for k in range(start_index, last_index + 1):
         first_agent, second_agent = all_combinations[k]
         r_agent, r_init_agent, r_init_heuristic, r_heuristic, r_depth = first_agent
