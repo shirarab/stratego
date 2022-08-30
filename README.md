@@ -15,7 +15,7 @@ Instructions for running the game from linux terminal:
     python3 stratego.py [--args]
 
 
-=======================================================================
+======================================================================
 
 
 Example runs:
@@ -47,7 +47,7 @@ python3 stratego.py -g gui -p 1 -ba RandomAgent -ra GuessingAlphaBetaAgent -ria 
 init_scattering_heuristic -rh naive_unit_count_heuristic -d 1 -n 5 -e naive_unit_value_count_evaluator
     
 
-=============================================================================
+========================================================================
 
 
 Explanation about command line arguments:
