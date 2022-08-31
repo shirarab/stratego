@@ -66,9 +66,6 @@ ALPHA_BETA_AGENT_HEURISTICS = [attack_opponent_heuristic, expose_soldiers_and_ad
 DEPTH = [2]
 
 
-# OP_HEURISTICS = AGENT_HEURISTICS.copy()
-# OP_HEURISTICS.append(random_heuristic)
-
 def create_excel():
     wb = Workbook()
     sheet = wb.add_sheet('evaluate project')
@@ -102,7 +99,6 @@ def create_excel():
 
 def main():
     sheet, wb, style_red, style_blue, style_black = create_excel()
-    # f = open("evaluate_project.txt", "w")
     guessing_agent_combinations = list(
         itertools.product([GuessingAlphaBetaAgent], INIT_AGENTS, INIT_HEURISTICS, GUESSING_AGENT_HEURISTICS, DEPTH))
     alpha_beta_agent_combinations = list(
@@ -113,14 +109,11 @@ def main():
     all_combinations_for_one_agent += alpha_beta_agent_combinations
     all_combinations = list(itertools.combinations(all_combinations_for_one_agent, 2))
     graphic = Graphic(BOARD_SIZE)
-    number_of_marathons = len(all_combinations) * 2 - (
-            len(random_agent_combinations) * (len(random_agent_combinations) - 1)) / 2 - len(
-        random_agent_combinations) * (len(guessing_agent_combinations) + len(alpha_beta_agent_combinations))
     completed_marathons = 0
     col = 1
     print(f"---------------- complete - {completed_marathons} ----------------")
-    start_index = max(39, 0)
-    last_index = min(40, len(all_combinations) - 1)
+    start_index = max(0, 0)
+    last_index = min(len(all_combinations) - 1, len(all_combinations) - 1)
     for k in range(start_index, last_index + 1):
         first_agent, second_agent = all_combinations[k]
         r_agent, r_init_agent, r_init_heuristic, r_heuristic, r_depth = first_agent
@@ -162,7 +155,7 @@ def main():
                     evaluate_score_avg_blue[evaluator] += float(SCORE_EVALUATORS[evaluator](game.state, Color.BLUE,
                                                                                             red_agent=red_agent,
                                                                                             blue_agent=blue_agent)) / num_of_games
-            col_ = k + op_heuristic_index
+            col_ = k
             sheet.write(0, col, col_, style_black)
             sheet.write(1, col, FOR_PRINT[r_agent], style_red)
             sheet.write(2, col, FOR_PRINT[r_init_agent], style_red)
@@ -187,26 +180,11 @@ def main():
                 i += 1
             col += 1
             wb.save('evaluate project.xls')
-            # f.write(
-            #     f"{FOR_PRINT[r_agent]} with : init agent - {FOR_PRINT[r_init_agent]} with {FOR_PRINT[r_init_heuristic]},\nplay heuristic - {FOR_PRINT[r_heuristic]}, guessed opponent heuristic - {FOR_PRINT[r_op_heuristic[op_heuristic_index]]}\n")
-            # f.write(" against \n")
-            # f.write(
-            #     f"{FOR_PRINT[b_agent]} with : init agent - {FOR_PRINT[b_init_agent]} with {FOR_PRINT[b_init_heuristic]},\nplay heuristic - {FOR_PRINT[b_heuristic]}, guessed opponent heuristic - {FOR_PRINT[b_op_heuristic[op_heuristic_index]]}\n")
-            # f.write(f"In {num_of_games} games:\n - player {Color.RED} won {game_marathon_summary[Color.RED]} games\n")
-            # f.write(f" - player {Color.BLUE} won {game_marathon_summary[Color.BLUE]} games\n")
-            # f.write(f" - the average number of {TURNS} in a game was {game_marathon_summary[TURNS]}\n")
-            # f.write(f" - the average {TIME} in a game was {game_marathon_summary[TIME]}\n")
-            # for evaluator in evaluate_score_avg:
-            #     f.write(f" - the average {evaluator} : {evaluate_score_avg[evaluator]}\n")
-            # f.write("\n")
+
             completed_marathons += 1
             print(f"---------------- complete - {completed_marathons} ----------------")
-        #     if completed_marathons > 0:
-        #         break
-        # if completed_marathons > 0:
-        #     break
+
     wb.save('evaluate project.xls')
-    # f.close()
 
 
 if __name__ == '__main__':

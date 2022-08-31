@@ -69,7 +69,7 @@ def naive_unit_count_evaluator(game_state: GameState, color: Color, **kwargs):
     """
     friendlies = game_state.get_knowledge_base(color).get_living_soldiers_count()
     enemies = game_state.get_knowledge_base(OP_COLOR[color]).get_living_soldiers_count()
-    return 1 - (1 - (float(friendlies) / (enemies * 40)) ** 8)
+    return (1 - (1 - (float(friendlies) / (enemies * 40)) ** 8))/(10**-9)
 
 
 def flat_naive_unit_count_evaluator(game_state: GameState, color: Color, **kwargs):
@@ -128,7 +128,7 @@ def naive_unit_value_count_evaluator(game_state: GameState, color: Color, **kwar
             continue
         points[Color.BLUE] += nuvc_get_soldier_points(soldier, red_has)
 
-    return points[color] / (points[OP_COLOR[color]] * 324)
+    return (points[color] / (points[OP_COLOR[color]] * 324))/(10**-2)
 
 
 # jm helper function
@@ -155,4 +155,4 @@ def jeroen_mets_evaluator(game_state: GameState, color: Color, **kwargs):
         points[Color.RED] += jeroen_mets_get_soldier_points(soldier)
     for soldier in blue_agent.soldiers:
         points[Color.BLUE] += jeroen_mets_get_soldier_points(soldier)
-    return points[color] / (points[OP_COLOR[color]] * 11087)
+    return (points[color] / (points[OP_COLOR[color]] * 11087))/(10**-4)
